@@ -1,0 +1,23 @@
+{
+  "name": "schoolofminnows",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hivechain/hivejs": "^1.0.4",
+    "@hiveio/dhive": "^1.1.1",
+    "beem": "^0.0.1",
+    "discord.js": "^13.3.1",
+    "dotenv": "^10.0.0",
+    "dsteem": "^0.11.3",
+    "fs-extra": "^10.0.0",
+    "hyperbee": "^1.6.3",
+    "hypercore": "^9.12.0",
+    "steem": "^0.7.11"
+  }
+}

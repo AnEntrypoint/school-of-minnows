@@ -1,0 +1,15 @@
+.env
+package-lock.json
+node_modules
+altruism-hive
+altruism-steem
+created-hive
+created-steem
+discord-hive
+discord-steem
+finished-hive
+finished-steem
+member-hive
+member-steem
+post-hive
+post-steem

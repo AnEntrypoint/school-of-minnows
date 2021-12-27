@@ -1,0 +1,12 @@
+mkdir discord-steem
+mkdir discord-hive
+mkdir finished-steem
+mkdir finished-hive
+mkdir memeber-steem
+mkdir member-hive
+mkdir post-steem
+mkdir post-hive
+mkdir created-steem
+mkdir created-hive
+mkdir altruism-steem
+mkdir altruism-hive
