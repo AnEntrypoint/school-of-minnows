@@ -7,6 +7,26 @@ module.exports = (meme, post)=>{
     });
 
     client.on('messageCreate', msg => {
+        if (msg.content.startsWith('.stats')) { 
+            const username = msg.content.replace('.stats ', '');
+            let stats = '';
+            try {
+                let hiveuser = JSON.parse(fs.readFileSync('altruism-hive/'+username)); //{"up":0.000599604963780028,"down":0}
+                let hivealtruism = hiveuser.up-hiveuser.down;
+                stats += `Hive altruism ${hivealtruism} \n`;
+            } catch(e) {
+
+            }
+            try {
+                let steemuser = JSON.parse(fs.readFileSync('altruism-steem/'+username)); //{"up":0.000599604963780028,"down":0}
+                let steemaltruism = steemuser.up-steemuser.down;
+                stats += `Steem altruism ${steemaltruism} \n`;
+            } catch(e) {
+
+            }
+            msg.reply(stats);
+        }
+
         if (msg.content.startsWith('.meme')) {
             let body = msg.content.replace('.meme', '').replace('.meme ', '');
             const image = msg.attachments.first().url;

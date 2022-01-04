@@ -38,7 +38,6 @@ const run = async () => {
     const pindexes = fs.readdirSync('post-' + vest);
     const posts = [];
     for (const pindex of pindexes) {
-        console.log(pindex);
         if (new Date().getTime() - parseInt(pindex) < (60000 * 15)) {
             console.log('post under 15 minutes')
             continue;
@@ -48,7 +47,14 @@ const run = async () => {
             fs.unlinkSync('post-' + vest + '/' + pindex);
             continue;
         }
-        const post = JSON.parse(fs.readFileSync('post-' + vest + '/' + pindex));
+        let post;
+        try {
+            post = JSON.parse(fs.readFileSync('post-' + vest + '/' + pindex));
+        } catch(e) {
+            fs.unlinkSync('post-' + vest + '/' + pindex);
+            return;
+        }
+        if(!post) return;
         console.log(post.permlink);
         if(post.active_votes > members.length*0.75) {
             console.log('post over 75% votes')
@@ -69,9 +75,8 @@ const run = async () => {
     posts.sort((a, b) => { return (b.posteraltruism.up - b.posteraltruism.down)-(a.posteraltruism.up - a.posteraltruism.down) });
     const dopost = async (data, props) => {
         const { posteraltruism, pindex } = data;
-        console.log('loading post');
         const post = data.post = await chain.api.getContentAsync(data.post.author, data.post.permlink);
-        console.log('post loaded');
+        console.log('loaded', post.author, post.permlink)
         post.last_round = new Date().getTime();
         fs.writeFileSync('post-' + vest + '/' + pindex, JSON.stringify(post));
         let smembers = [];
@@ -162,11 +167,16 @@ const run = async () => {
             ];
             console.log('voting');
             await client.broadcast.sendOperations([op], k);
-            let voteraltruism = fs.existsSync('altruism' + vest + '/' + name) ? JSON.parse(fs.readFileSync('altruism-' + vest + '/' + name)) : { up: 0, down: 0 };
-            voteraltruism.up = parseFloat(voteraltruism.up) + (value * weight) / 100;
-            posteraltruism.down = parseFloat(posteraltruism.down) + (value * weight) / 100;
+            const voterexists = fs.existsSync('altruism-' + vest + '/' + name);
+            const posterexists = fs.existsSync('altruism-' + vest + '/' + post.author);
+            let voteraltruism = voterexists ? JSON.parse(fs.readFileSync('altruism-' + vest + '/' + name)) : { up: 0, down: 0 };
+            let postaltruism = posterexists ? JSON.parse(fs.readFileSync('altruism-' + vest + '/' + post.author)) : { up: 0, down: 0 };
+            const add = parseFloat(value * weight) / 100;
+            const rem = parseFloat(value * weight) / 100;
+            voteraltruism.up = parseFloat(voteraltruism.up)+add;
+            posteraltruism.down = parseFloat(postaltruism.down)+rem;
             fs.writeFileSync('altruism-' + vest + '/' + name, JSON.stringify(voteraltruism));
-            fs.writeFileSync('altruism-' + vest + '/' + post.author, JSON.stringify(posteraltruism));
+            fs.writeFileSync('altruism-' + vest + '/' + post.author, JSON.stringify(postaltruism));
             account.last_vote_time = new Date().getTime();
             console.log('voted',post.permlink, post.author, 'as', name);
             //await new Promise(res=>setTimeout(res,5000))

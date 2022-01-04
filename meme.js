@@ -24,9 +24,15 @@ const getMembers = async () => {
             console.log(op[1].author, 'rc', rc.current_mana, 'needs', 914399162-rc.current_mana, 'more');
             continue;
         }
-        const res = await client.broadcast.sendOperations([op],k);
-        console.log(res);
-        if(res && res.id) fs.renameSync('created-'+vest+'/'+post, 'finished-'+vest+'/'+post);            
+        try {
+            const res = await client.broadcast.sendOperations([op],k);
+            console.log(res);
+            if(res && res.id) fs.renameSync('created-'+vest+'/'+post, 'finished-'+vest+'/'+post);
+            else  fs.renameSync('created-'+vest+'/'+post, 'failed-'+vest+'/'+post);
+
+        } catch(e) {
+            fs.renameSync('created-'+vest+'/'+post, 'failed-'+vest+'/'+post);
+        }
         return;
     }
 }
@@ -76,7 +82,7 @@ Visit entrypoint discord https://discord.com/invite/t7dDTnd
             body: body,
             json_metadata: json_metadata,
             parent_author: '',
-            parent_permlink: taglist[0],
+            parent_permlink: taglist[0]?taglist[0].toString():'steemit',
             permlink: permlink.toString('hex'),
             title: title,
         },
