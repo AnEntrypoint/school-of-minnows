@@ -26,8 +26,8 @@ const getValue = async (account, fund, price) => {
 }
 
 setTimeout(()=>{
-    process.exit();
-},300000)
+    //process.exit();
+},3600000)
 const run = async () => {
     console.log('vote run', vest)
     let props = await chain.api.getDynamicGlobalPropertiesAsync()
