@@ -1,18 +1,18 @@
-const hypercore = require('hypercore');
-var feed = hypercore('./accounts-'+vest, { valueEncoding: 'json' });
+require('./load-hive.js');
+const fs = require('fs');
 (async () => {
-    await new Promise(res=>feed.on('ready', res));
-    console.log(feed.length)
-    fs.mkdirSync('member-'+vest+'/', { recursive: true });
-
-    for(let x = 0; x < feed.length; x++) {
-        const account = await new Promise(ret=>feed.get(x, (e,r)=>ret(r)));
-        if(account.posting.account_auths.length) {
-            for(let auth of account.posting.account_auths) {
-                if(auth[0] == 'minnowschool') {
-                    fs.writeFileSync("member-"+vest+"/"+account.name, JSON.stringify(account));
-                }
-            }
-        }
+    let acc = fs.readdirSync('member-'+vest); 
+    const done = [];
+    for(let aindex of acc) {
+        const account = fs.readFileSync('member-'+vest+'/'+aindex);
+        const filter = 'blog';
+        const query = {
+            tag: aindex,
+            limit: 5,
+        };
+        const discussions = await client.database.getDiscussions(filter, query);
+        discussions.forEach((post)=>{
+            fs.writeFileSync('post-'+vest+'/'+new Date().getTime(), JSON.stringify(post))
+        })
     }
 })()

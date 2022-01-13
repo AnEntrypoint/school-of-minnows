@@ -18,7 +18,9 @@ const fs = require('fs');
                 if(account.posting.account_auths.length) {
                     for(let auth of account.posting.account_auths) {
                         if(auth[0] == 'minnowschool') {
-                            fs.writeFileSync("member-"+vest+"/"+account.name, JSON.stringify(account));
+                            //fs.writeFileSync("member-"+vest+"/"+account.name, JSON.stringify(account));
+
+                            //fs.writeFileSync("member-"+vest+"/"+account.name, JSON.stringify(account));
                         }
                     }
                 }

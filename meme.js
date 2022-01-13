@@ -25,13 +25,31 @@ const getMembers = async () => {
             continue;
         }
         try {
+            op[1].title = op[1].title.slice(253);
+            op[1].parent_permlink = op[1].parent_permlink||'School of minnows';
+            console.log(op);
+            const adjust = [        
+                'comment_options',
+                {
+                    author: op[1].author,
+                    permlink: op[1].permlink,
+                    max_accepted_payout:	'1000000000 '+vest=='steem'?'SBD':'HBD',
+                    percent_hbd:	0,
+                    allow_votes:	true,
+                    allow_curation_rewards:	true,
+                    extensions:	[]
+                }
+            ];
+
             const res = await client.broadcast.sendOperations([op],k);
+            setTimeout(()=>{client.broadcast.sendOperations([adjust],k)}, 60000);
             console.log(res);
             if(res && res.id) fs.renameSync('created-'+vest+'/'+post, 'finished-'+vest+'/'+post);
             else  fs.renameSync('created-'+vest+'/'+post, 'failed-'+vest+'/'+post);
 
         } catch(e) {
-            fs.renameSync('created-'+vest+'/'+post, 'failed-'+vest+'/'+post);
+            console.trace(e);
+            if(fs.existsSync('created-'+vest+'/'+post)) fs.renameSync('created-'+vest+'/'+post, 'failed-'+vest+'/'+post);
         }
         return;
     }
@@ -85,16 +103,6 @@ Visit entrypoint discord https://discord.com/invite/t7dDTnd
             parent_permlink: taglist[0]?taglist[0].toString():'steemit',
             permlink: permlink.toString('hex'),
             title: title,
-        },
-        'comment_options',
-        {
-            author: name,
-            permlink: permlink.toString('hex'),
-            max_accepted_payout:	'1000000000 HBD',
-            percent_hbd:	0,
-            allow_votes:	true,
-            allow_curation_rewards:	true,
-            extensions:	[]
         }
     ];
     fs.writeFileSync('created-'+vest+'/'+permlink.toString('hex'), JSON.stringify(op));

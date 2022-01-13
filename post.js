@@ -1,5 +1,6 @@
 const fs = require('fs');
 let discord = {};
+let poster = {};
 const getMembers = async () => {
     let send = fs.readdirSync('created-'+vest); 
     const done = [];
@@ -26,7 +27,7 @@ const getMembers = async () => {
         }
         const res = await client.broadcast.sendOperations([op],k);
         console.log(res);
-        if(res && res.id) fs.renameSync('created-'+vest+'/'+post, 'finished-'+vest+'/'+post);            
+        if(res && res.id) if(fs.existsSync('created-'+vest+'/'+post)) fs.renameSync('created-'+vest+'/'+post, 'finished-'+vest+'/'+post);            
         return;
     }
 }
@@ -44,7 +45,8 @@ module.exports = (paragraphs, images, id, msg)=>{
             discord[memid] = member;
         }
     }  
-    const name = discord[id];
+
+    let name = discord[id];
     if(!name) {
         return false;
     }

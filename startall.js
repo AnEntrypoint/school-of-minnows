@@ -1,6 +1,0 @@
-setTimeout(()=>{require('./meme-steem.js')},0)
-setTimeout(()=>{require('./stream-steem.js')},100)
-setTimeout(()=>{require('./voter-steem.js')},200)
-setTimeout(()=>{require('./meme-hive.js')},300)
-setTimeout(()=>{require('./stream-hive.js')},400)
-setTimeout(()=>{require('./voter-hive.js')},500)

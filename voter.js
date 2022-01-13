@@ -38,10 +38,6 @@ const run = async () => {
     const pindexes = fs.readdirSync('post-' + vest);
     const posts = [];
     for (const pindex of pindexes) {
-        if (new Date().getTime() - parseInt(pindex) < (60000 * 15)) {
-            console.log('post under 15 minutes')
-            continue;
-        }
         if((parseFloat(pindex)+604800000-new Date().getTime())<0) {
             console.log('post over  7 days')
             fs.unlinkSync('post-' + vest + '/' + pindex);
@@ -52,13 +48,23 @@ const run = async () => {
             post = JSON.parse(fs.readFileSync('post-' + vest + '/' + pindex));
         } catch(e) {
             fs.unlinkSync('post-' + vest + '/' + pindex);
-            return;
+            continue;
         }
-        if(!post) return;
-        console.log(post.permlink);
-        if(post.active_votes > members.length*0.75) {
-            console.log('post over 75% votes')
+        if((new Date(post.last_update).getTime()+604800000-new Date().getTime())<0) {
+            console.log('post over 7 days')
             fs.unlinkSync('post-' + vest + '/' + pindex);
+            continue;
+        }
+        if(!post) continue;
+        if (new Date().getTime() - parseInt(pindex) < (60000 * 15)) {
+            console.log('post under 15 minutes')
+            continue;
+        }
+        console.log(post.permlink);
+        if(post.active_votes > members.length*0.85) {
+            console.log('post over 85% votes')
+            fs.unlinkSync('post-' + vest + '/' + pindex);
+            continue;
         }
         if(!post.author) {
             console.log('no post author')
@@ -74,15 +80,19 @@ const run = async () => {
     }
     posts.sort((a, b) => { return (b.posteraltruism.up - b.posteraltruism.down)-(a.posteraltruism.up - a.posteraltruism.down) });
     const dopost = async (data, props) => {
-        const { posteraltruism, pindex } = data;
-        const post = data.post = await chain.api.getContentAsync(data.post.author, data.post.permlink);
-        console.log('loaded', post.author, post.permlink)
+        const { pindex } = data;
+        let post = data.post = await chain.api.getContentAsync(data.post.author, data.post.permlink);
+        //console.log(post.permlink, 'by', post.author)
+        if((new Date(post.last_update_time).getTime()+604800000-new Date().getTime())<0) {
+            console.log('post over 7 days')
+            fs.unlinkSync('post-' + vest + '/' + pindex);
+            return;
+        }
         post.last_round = new Date().getTime();
         fs.writeFileSync('post-' + vest + '/' + pindex, JSON.stringify(post));
         let smembers = [];
         for(name of members) {
             const json = fs.readFileSync('member-' + vest + '/' + name);
-            //console.log(json.toString());
             try {
                 const account = JSON.parse(json);
                 let add = true;
@@ -94,7 +104,6 @@ const run = async () => {
                 fs.writeFileSync('member-' + vest + '/' + name, JSON.stringify(account));
                 continue;
             }
-            //console.log(account.name);
         }
         for (let memberData of smembers.reverse().sort((a, b) => {return getRc(b,props)-getRc(a,props)})) {
             if(memberData.skip) {
@@ -120,6 +129,7 @@ const run = async () => {
                     }
                 }
             }
+
             if(!authed) {
                 fs.unlinkSync("member-"+vest+"/"+account.name);
                 continue;
@@ -165,28 +175,39 @@ const run = async () => {
                     "weight": parseInt(weight)
                 },
             ];
-            console.log('voting');
-            await client.broadcast.sendOperations([op], k);
-            const voterexists = fs.existsSync('altruism-' + vest + '/' + name);
-            const posterexists = fs.existsSync('altruism-' + vest + '/' + post.author);
-            let voteraltruism = voterexists ? JSON.parse(fs.readFileSync('altruism-' + vest + '/' + name)) : { up: 0, down: 0 };
-            let postaltruism = posterexists ? JSON.parse(fs.readFileSync('altruism-' + vest + '/' + post.author)) : { up: 0, down: 0 };
-            const add = parseFloat(value * weight) / 100;
-            const rem = parseFloat(value * weight) / 100;
-            voteraltruism.up = parseFloat(voteraltruism.up)+add;
-            posteraltruism.down = parseFloat(postaltruism.down)+rem;
-            fs.writeFileSync('altruism-' + vest + '/' + name, JSON.stringify(voteraltruism));
-            fs.writeFileSync('altruism-' + vest + '/' + post.author, JSON.stringify(postaltruism));
-            account.last_vote_time = new Date().getTime();
-            console.log('voted',post.permlink, post.author, 'as', name);
-            //await new Promise(res=>setTimeout(res,5000))
-            if(votes>100)return true;
+            const modAlt = (name, mod, quant)=>{
+                const file = 'altruism-' + vest + '/' + name;
+                let alt = { up:0, down:0 }
+                if(fs.existsSync(file)) {
+                    alt = JSON.parse(fs.readFileSync(file));
+                }
+                alt[mod] += quant;
+                fs.writeFileSync(file, JSON.stringify(alt));
+            }
+            try {
+                await client.broadcast.sendOperations([op], k);
+                console.log('voted', op[1])
+                votes++;
+                const quant = parseFloat(value * weight) / 100;
+                modAlt(name, 'up', quant);
+                modAlt(post.author,'down',quant);
+                account.last_vote_time = new Date().getTime();
+                fs.writeFileSync('member-' + vest + '/' + name, JSON.stringify(account));
+            } catch(e) {
+                console.error(e.message);
+                return;
+            }
+            if(votes>10)return true;
         }
     }
     try {
+        
         for (const data of posts) {
             try {
-                if(await dopost(data,props)) return;
+                if(await dopost(data,props)) {
+                    setTimeout(run, 0);
+                    return;
+                }
             } catch (e) {
                 console.error(e);
             }
@@ -194,5 +215,6 @@ const run = async () => {
     } catch(e) {
         console.error(e);
     }
+    setTimeout(run, 0);
 }
-setTimeout(run, 5000);
+setTimeout(run, 1000);

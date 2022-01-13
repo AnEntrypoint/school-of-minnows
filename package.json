@@ -11,13 +11,21 @@
   "dependencies": {
     "@hivechain/hivejs": "^1.0.4",
     "@hiveio/dhive": "^1.1.1",
+    "@hyperswarm/dht": "^5.0.12",
     "beem": "^0.0.1",
+    "body-parser": "^1.19.1",
     "discord.js": "^13.3.1",
     "dotenv": "^10.0.0",
     "dsteem": "^0.11.3",
+    "express": "^4.17.2",
     "fs-extra": "^10.0.0",
+    "hi-base32": "^0.5.1",
     "hyperbee": "^1.6.3",
     "hypercore": "^9.12.0",
+    "hypercore-crypto": "^3.1.1",
+    "imgbb-uploader": "^1.3.5",
+    "msgpackr": "^1.5.2",
+    "pump": "^3.0.0",
     "steem": "^0.7.11"
   }
 }

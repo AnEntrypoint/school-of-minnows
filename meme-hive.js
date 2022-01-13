@@ -1,2 +1,3 @@
 require('./load-hive.js');
-require('./discord.js')(require('./meme.js'), require('./post.js'));
+const post = require('./post.js');
+require('./discord.js')(require('./meme.js'), post);

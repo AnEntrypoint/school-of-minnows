@@ -1,0 +1,101 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SOM Poster</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.17/tailwind-dark.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/codemirror.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@tailwindcss/typography@0.2.x/dist/typography.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tw-elements/dist/css/index.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/tw-elements/dist/js/index.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+  </head>
+  <body>
+    <app></app>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/mode/markdown/markdown.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/idb-keyval@6/dist/umd.js"></script>
+    <script src="https://unpkg.com/moment@2.29.1/min/moment.min.js"></script>
+    <script src="https://unpkg.com/msgpackr@1.2.5/dist/index.js"></script>
+    <script src="https://unpkg.com/riot@6/riot+compiler.min.js"></script>
+    <script src="https://unpkg.com/tweetnacl@1.0.3/nacl.min.js"></script>
+    <script src="https://unpkg.com/@riotjs/route/route.js"></script>
+    <script src="https://bundle.run/buffer@6.0.3"></script>
+    <script type="riot" src="components/markdown.html"></script>
+    <script type="riot" src="components/file.html"></script>
+    <script type="riot" src="components/app.html"></script>
+    <script type="module">
+      (async () => {
+
+        // SIGNER
+        
+        window.packr = new msgpackr.Packr({ structuredClone: true });
+        const C = {
+          CONTRACT: 'c',
+          ACTION: 'a',
+          INPUT: 'i',
+          TRANSACTION: 't',
+          KEYS: 'k',
+          SIGNATURE: 's',
+          PUBLICKEY: 'k'
+        };
+        window.sign = (from) => {
+          const tx = {};
+          tx[C.ACTION] = from.action;
+          tx[C.INPUT] = from.input;
+          const keyUint8Array = new Uint8Array(Buffer.from(from.keyPair.secretKey, "hex"));
+          const packed = packr.pack(tx);
+          const out = {};
+          out[C.TRANSACTION] = new Uint8Array(packed);
+          out[C.SIGNATURE] = nacl.sign.detached(out[C.TRANSACTION], keyUint8Array);
+          out[C.PUBLICKEY] = new Uint8Array(Buffer.from(from.keyPair.publicKey, "hex"));
+          return packr.pack(out);
+        };
+        
+        window.Buffer = buffer.Buffer;
+        window.keyPair = JSON.parse(localStorage.getItem("keys"));
+        if (!window.keyPair) {
+          window.keyPair = nacl.sign.keyPair();
+          const save = {
+            publicKey: Buffer.from(window.keyPair.publicKey).toString("hex"),
+            secretKey: Buffer.from(window.keyPair.secretKey).toString("hex"),
+          };
+          localStorage.setItem("keys", JSON.stringify(save));
+          console.log("saved");
+        } else {
+          window.keyPair.secretKey = Buffer.from(
+            window.keyPair.secretKey,
+            "hex"
+          );
+          window.keyPair.publicKey = Buffer.from(
+            window.keyPair.publicKey,
+            "hex"
+          );
+        }
+        
+        
+        riot.register("router", route.Router);
+        riot.register("route", route.Route);
+        await riot.compile();
+        riot.mount("app");
+      })();
+    </script>
+  </body>
+</html>
