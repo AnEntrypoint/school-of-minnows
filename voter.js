@@ -1,5 +1,6 @@
 const fs = require('fs');
 let votes = 0;
+let rates = [];
 
 const getRc = (account, props) => {
     var CURRENT_UNIX_TIMESTAMP = parseInt((new Date(props.time).getTime() / 1000).toFixed(0))
@@ -26,7 +27,7 @@ const getValue = async (account, fund, price) => {
 }
 
 setTimeout(()=>{
-    //process.exit();
+    process.exit();
 },3600000)
 const run = async () => {
     console.log('vote run', vest)
@@ -81,7 +82,13 @@ const run = async () => {
     posts.sort((a, b) => { return (b.posteraltruism.up - b.posteraltruism.down)-(a.posteraltruism.up - a.posteraltruism.down) });
     const dopost = async (data, props) => {
         const { pindex } = data;
-        let post = data.post = await chain.api.getContentAsync(data.post.author, data.post.permlink);
+        let post;
+        try {
+            post = data.post = await chain.api.getContentAsync(data.post.author, data.post.permlink);
+        } catch(e) {
+            console.error(e.message);
+        }
+        if(!post) return;
         //console.log(post.permlink, 'by', post.author)
         if((new Date(post.last_update_time).getTime()+604800000-new Date().getTime())<0) {
             console.log('post over 7 days')
@@ -107,6 +114,7 @@ const run = async () => {
         }
         for (let memberData of smembers.reverse().sort((a, b) => {return getRc(b,props)-getRc(a,props)})) {
             if(memberData.skip) {
+                console.log(memberData.name, 'skipping');
                 continue;
             }
             const name = memberData.name;
@@ -115,16 +123,18 @@ const run = async () => {
                 continue;
             }
             if(new Date().getTime() - new Date(memberData.last_vote_time).getTime() < 6000) {
+                console.log(memberData.name, 'voted too recently');
                 continue;
             }
             if (post.author == name) {
+                console.log(memberData.name, 'is the author');
                 continue;
             }
             var authed = false;
             const account = (await chain.api.getAccountsAsync([name]))[0];
             if(account.posting.account_auths.length) {
                 for(let auth of account.posting.account_auths) {
-                    if(auth[0] == 'minnowschool') {
+                    if(auth[0] === 'minnowschool') {
                         authed = true;
                     }
                 }
@@ -132,6 +142,7 @@ const run = async () => {
 
             if(!authed) {
                 fs.unlinkSync("member-"+vest+"/"+account.name);
+                console.log(memberData.name, 'not authed');
                 continue;
             }
             fs.writeFileSync('member-' + vest + '/' + name, JSON.stringify(account));
@@ -154,10 +165,12 @@ const run = async () => {
 
             const rc = await client.rc.getRCMana(account.name);
             const vp = await client.rc.getVPMana(account.name);
-            if(vp.current_mana < 205144852) {
+            if(vp.current_mana < 14485) {
+                console.log(name, 'too low vp mana on chain', getRc(account, props), getRc(memberData, props), post.permlink)
                 continue;
             }
-            if(rc.current_mana < 205144852) {
+            if(rc.current_mana < 150144850) {
+                console.log(name, 'too low rc mana on chain', getRc(account, props), getRc(memberData, props), post.permlink)
                 continue;
             }
             let weight = 10000;
@@ -185,6 +198,7 @@ const run = async () => {
                 fs.writeFileSync(file, JSON.stringify(alt));
             }
             try {
+                votes++;
                 await client.broadcast.sendOperations([op], k);
                 console.log('voted', op[1])
                 votes++;
@@ -195,6 +209,7 @@ const run = async () => {
                 fs.writeFileSync('member-' + vest + '/' + name, JSON.stringify(account));
             } catch(e) {
                 console.error(e.message);
+                
                 return;
             }
             if(votes>10)return true;
@@ -218,3 +233,13 @@ const run = async () => {
     setTimeout(run, 0);
 }
 setTimeout(run, 1000);
+setInterval(()=>{
+    rates.push(votes);
+    while(rates.length > 60) rates.shift();
+    var rate = 0;
+    rates.forEach((r)=>{
+        rate += r/rates.length;
+    });
+    fs.writeFileSync('rate-'+vest, votes.toString());
+    votes = 0;
+}, 30000)
