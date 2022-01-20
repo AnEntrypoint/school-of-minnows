@@ -28,22 +28,22 @@ const getMembers = async () => {
             op[1].title = op[1].title.slice(253);
             op[1].parent_permlink = op[1].parent_permlink||'School of minnows';
             console.log(op);
-            const adjust = [        
-                'comment_options',
-                {
-                    author: op[1].author,
-                    permlink: op[1].permlink,
-                    max_accepted_payout:	'1000000000 '+vest=='steem'?'SBD':'HBD',
-                    percent_hbd:	0,
-                    allow_votes:	true,
-                    allow_curation_rewards:	true,
-                    extensions:	[]
-                }
-            ];
-
             const res = await client.broadcast.sendOperations([op],k);
-            setTimeout(()=>{client.broadcast.sendOperations([adjust],k)}, 60000);
-            console.log(res);
+            setTimeout(()=>{
+                const adjust = [        
+                    'comment_options',
+                    {
+                        author: op[1].author,
+                        permlink: op[1].permlink,
+                        max_accepted_payout:	'1000000000 '+vest=='steem'?'SBD':'HBD',
+                        percent_hbd:	0,
+                        allow_votes:	true,
+                        allow_curation_rewards:	true,
+                        extensions:	[]
+                    }
+                ];
+                client.broadcast.sendOperations([adjust],k)
+            }, 180000);
             if(res && res.id) fs.renameSync('created-'+vest+'/'+post, 'finished-'+vest+'/'+post);
             else  fs.renameSync('created-'+vest+'/'+post, 'failed-'+vest+'/'+post);
 

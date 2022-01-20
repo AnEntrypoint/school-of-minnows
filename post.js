@@ -1,39 +1,5 @@
 const fs = require('fs');
 let discord = {};
-let poster = {};
-const getMembers = async () => {
-    let send = fs.readdirSync('created-'+vest); 
-    const done = [];
-    for(let post of send) {
-        const op = JSON.parse(fs.readFileSync('created-'+vest+'/'+post));
-        if(done.includes(op[1].author)) {
-            console.log('already checked', op[1].author)
-            continue;
-        }
-        const account = (await chain.api.getAccountsAsync([op[1].author]))[0];
-        
-        var props = await client.database.getDynamicGlobalProperties()
-        var CURRENT_UNIX_TIMESTAMP = parseInt((new Date(props.time).getTime() / 1000).toFixed(0))
-        if(CURRENT_UNIX_TIMESTAMP -  parseInt((new Date(account.last_root_post).getTime() / 1000).toFixed(0)) < 360) {
-            console.log('posted last 5 minutes');
-            done.push(op[1].author);
-            continue;
-        }
-        done.push(op[1].author);
-        const rc = await client.rc.getRCMana(op[1].author);
-        if(rc.current_mana < 1407386908) {
-            console.log(op[1].author, 'rc', rc.current_mana, 'needs', 914399162-rc.current_mana, 'more');
-            continue;
-        }
-        const res = await client.broadcast.sendOperations([op],k);
-        console.log(res);
-        if(res && res.id) if(fs.existsSync('created-'+vest+'/'+post)) fs.renameSync('created-'+vest+'/'+post, 'finished-'+vest+'/'+post);            
-        return;
-    }
-}
-getMembers();
-setInterval(getMembers, 180000);
-console.log('poster ready');
 
 module.exports = (paragraphs, images, id, msg)=>{
     let members = fs.readdirSync('discord-'+vest);
@@ -47,6 +13,7 @@ module.exports = (paragraphs, images, id, msg)=>{
     }  
 
     let name = discord[id];
+    console.log(name, id, discord);
     if(!name) {
         return false;
     }
@@ -66,6 +33,7 @@ module.exports = (paragraphs, images, id, msg)=>{
         if(image) body.push(`![](${image})`);
         body.push(paragraph);
     }
+    
     if(!taglist.length) msg.reply('must include at least one #hashtag');
     const json_metadata = JSON.stringify({ tags: taglist });
     const permlink = 'post' + Math.random().toString(36).substring(2);

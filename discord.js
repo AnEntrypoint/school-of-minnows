@@ -36,13 +36,13 @@ module.exports = (meme, post)=>{
                 console.log(file);
                 urls.push(file[1].url)
             }
-            paragraphs.shift();
+            paragraphs[0].replace('.post ','').replace('.post','');
             if(paragraphs.length<2) {
                 msg.reply('Need at least one paragraph and a title');
-            }
+            } else
             if(!paragraphs.length) {
                 msg.reply('Need at least one image');
-            }
+            } else
             if(!post(paragraphs, urls, msg.author.id, msg)) msg.reply('You need to register first');
         }
     });
