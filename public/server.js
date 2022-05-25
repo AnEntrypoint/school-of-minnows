@@ -20,7 +20,7 @@ const verify = (message) => {
       return input;
 };
 
-app.put('*', express.raw({ inflate: true, limit: '50mb', type: () => true }), async (req, res) => {
+app.post('*', express.raw({ inflate: true, limit: '50mb', type: () => true }), async (req, res) => {
   const out = verify(req.body);
   console.log(req.body.length, out);
   const data = out.t.i;
