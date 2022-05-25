@@ -97,7 +97,7 @@
             const data = this.state;
             const body = sign({ action:'post', input:data, keyPair });
             var xhr = new XMLHttpRequest;
-            xhr.open("PUT", '/post', false);
+            xhr.open("POST", '/post', false);
             xhr.send(body);
       }
     }
