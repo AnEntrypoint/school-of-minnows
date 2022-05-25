@@ -1,80 +1,57 @@
-const fs = require('fs');
-let discord = {};
-const getMembers = async () => {
-    let send = fs.readdirSync('created-'+vest); 
-    const done = [];
-    for(let post of send) {
-        const op = JSON.parse(fs.readFileSync('created-'+vest+'/'+post));
-        const account = (await chain.api.getAccountsAsync([op[1].author]))[0];
-        
-        if(done.includes(op[1].author)) continue;
-        var props = await client.database.getDynamicGlobalProperties()
-        var CURRENT_UNIX_TIMESTAMP = parseInt((new Date(props.time).getTime() / 1000).toFixed(0))
-        if(CURRENT_UNIX_TIMESTAMP -  parseInt((new Date(account.last_root_post).getTime() / 1000).toFixed(0)) < 360) {
-            console.log('posted last 5 minutes');
-            done.push(op[1].author);
-            continue;
-        }
-        done.push(op[1].author);
-        const rc = await client.rc.getRCMana(op[1].author);
-        if(rc.current_mana < 922966515) return 0;
-        const res = await client.broadcast.sendOperations([op],k);
-        console.log(res);
-        if(res && res.id) fs.renameSync('created-'+vest+'/'+post, 'finished-'+vest+'/'+post);            
-        return;
-    }
+const fs = require("fs");
+advertorial  = () => {
+  const name = "schoolofminnows";
+  const title = "SCHOOL OF MINNOWS IS A FREE VALUE ADDED SERVICE";
+  const body = `You allow the group to vote for you, the rest is automatic.
+
+  Find out how to join here: https://plug.sh/somlanding/
+
+https://media.discordapp.net/attachments/880507766345728100/914191196652445716/5vq702.png
+
+# WHAT DOES IT DO?
+
+Your voting power can not go over 100%. It waits till voting power is about to go to waste, then prevents that waste to support the group. If your voting power reaches close to 100% it will vote on your behalf for other group members.
+
+https://media.discordapp.net/attachments/880507766345728100/914192883148541982/2Q.png?width=478&height=683
+
+# HOW IS THIS DONE
+
+Your position for a vote is determined by how many votes has been produced on your behalf, you will be refunded for your votes, keep posting, keep letting it vote, and you'll get the maximum out, when you're behind, you will get more votes, when you're overpaid, it will spread to other users a bit first, so if you don't post for a while, you can post more often to catch up.
+
+You just join, and post, that's all you do, the more you let your voting idle, the more you'll get from the group.
+
+https://media.discordapp.net/attachments/880507766345728100/914191619295703061/Z.png
+
+You can also use your own tools or wallet to delegate post access to the @minnowschool account
+
+# How do I join?
+
+All you have to do is give voting access to the account, the rest is automatic.
+
+Find out how to join here: https://plug.sh/somlanding/`;
+
+  const taglist =
+    "advertorial entrypoint onetrheethreeseven heclgang entrypoint".split(" ");
+  const json_metadata = JSON.stringify({ tags: taglist });
+  const permlink = "som" + Math.random().toString(36).substring(2);
+  console.log(permlink);
+  const op = [
+    "comment",
+    {
+      author: name,
+      body: body,
+      json_metadata: json_metadata,
+      parent_author: "",
+      parent_permlink: "schoolofminnows",
+      permlink: permlink.toString("hex").toLowerCase(),
+      title: title,
+    },
+  ];
+  fs.writeFileSync('data/advertorial-'+vest+'/last', permlink.toString("hex").toLowerCase())
+  fs.writeFileSync(
+    "data/created-"+vest+"/" + permlink.toString("hex"),
+    JSON.stringify(op)
+  );
 }
-getMembers();
-setInterval(getMembers, 180000);
-console.log('poster ready');
 
-module.exports = (msgtitle, imglink, id)=>{
-    let members = fs.readdirSync('discord-'+vest);
-    console.log(members, vest);
-    for(let member of members) {
-        if(!members[member]) {
-            const memid = fs.readFileSync('discord-'+vest+'/'+member);
-            members[member] = memid;
-            discord[memid] = member;
-        }
-    }
-    console.log('poster meme', id, discord);
-    const name = discord[id];
-    if(!name) {
-        console.log('no user');
-        return;
-    }
-    const title = msgtitle || 'An ENTRYPOINT MEME';
-    const body = `# ${title}
-
-${imglink}
-
-A heclgang meme
-
-Brought to you by ENTRYPOINT
-Visit entrypoint discord https://discord.com/invite/t7dDTnd
-#weareone #onethreethreeseven
-`;
-    
-    const taglist = 'meme weareone onetrheethreeseven heclgang entrypoint'.split(' ');
-    const json_metadata = JSON.stringify({ tags: taglist });
-    const permlink = 'meme' + Math.random()
-        .toString(36)
-        .substring(2);
-    console.log(permlink)
-    
-    const op = [
-        'comment',
-        {
-            author: name,
-            body: body,
-            json_metadata: json_metadata,
-            parent_author: '',
-            parent_permlink: taglist[0],
-            permlink: permlink.toString('hex'),
-            title: title,
-        },
-    ];
-    fs.writeFileSync('created-'+vest+'/'+permlink.toString('hex'), JSON.stringify(op));
-   }
-
+setInterval(advertorial, 1000 * 60 * 60 * 24);

@@ -1,69 +1,106 @@
 <app>
-    <div class="text-3xl lg:text-4xl font-bold tracking-tight mb-4 text-center">
-      <span
-        class="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-green-400"
-      >
-        Editor
-      </span>
-    </div>
-    <div class="text-xs text-center">
-      SOMPID
-    </div>
-    <div class="text-xs text-center">
-      {window.keyPair.publicKey.toString('hex')}
-    </div>
-    <div class="text-xs text-center">
-      KEY
-    </div>
-    <input class="text-xs w-full text-center" value="{window.keyPair.secretKey.toString('hex')}" />
-    <div class="">
-      <button onclick="{send}">
-        SEND POST
-      </button>
-    </div>
-    <markdown update="{textUpdated}"/>
-    <file update="{imageUpdated}"></file>
+  <div class="text-3xl lg:text-4xl font-bold tracking-tight mb-4 text-center">
+    <span
+      class="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-green-400"
+    >
+      Editor
+    </span>
+  </div>
+  <div class="text-xs text-center">
+    SOMPID
+  </div>
+  <div class="text-xs text-center" >
+    {window.Buffer.from(window.keyPair.publicKey).toString("hex")}
+  </div>
   
-    <section class="overflow-hidden text-gray-700 ">
-      <div class="container px-5 py-2 mx-auto lg:pt-12 lg:px-32">
-        <div class="flex flex-wrap -m-1 md:-m-2" id="preview">
-          <div each="{ image in state.images }" class="flex flex-wrap w-1/3">
-            <div class="w-full p-1 md:p-2">
-              <img alt="gallery" class="block object-cover object-center w-full h-full rounded-lg" src="{ image }">
-            </div>
+  <input id="pk" class="text-xs w-full text-center hidden" oninput="{keyChange}" value="{window.Buffer.from(window.keyPair.secretKey).toString('hex')}" />
+  
+  <div  class="mx-auto text-center" >
+    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="{send}">
+      SEND POST
+    </button>
+    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="{copyKey}">
+      COPY ACCOUNT
+    </button>
+    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="{login}">
+      LOGIN
+    </button>
+</div>
+
+
+  <markdown update="{textUpdated}" send="{send}"/>
+  <file update="{imageUpdated}"></file>
+
+  <section class="overflow-hidden text-gray-700 ">
+    <div class="container px-5 py-2 mx-auto lg:pt-12 lg:px-32">
+      <div class="flex flex-wrap -m-1 md:-m-2" id="preview">
+        <div each="{ image in state.images }" class="flex flex-wrap w-1/3">
+          <div class="w-full p-1 md:p-2">
+            <img alt="gallery" class="block object-cover object-center w-full h-full rounded-lg" src="{ image }">
           </div>
         </div>
       </div>
-    </section>
-    
-    <script>
-      export default {
-        onBeforeMount(props, state) {
-          this.state = {
-            images:[],
-            body:'' 
-          }
-        },
-        imageUpdated(file) {
-          let fileReaderToImage = new FileReader();
-          fileReaderToImage.addEventListener('load', (event)=>{
-              this.state.images.push(event.target.result);
-              console.log(event.target.result);
-              this.update();
-          });
-          fileReaderToImage.readAsDataURL(file);
-        },
-        textUpdated(text) {
-          this.update(text)
-        },
-        send() {
+    </div>
+  </section>
+  
+  <script>
+    export default {
+      onBeforeMount(props, state) {
+        this.state = {
+          images:[],
+          body:'' 
+        }
+      },
+      imageUpdated(file) {
+        let fileReaderToImage = new FileReader();
+        fileReaderToImage.addEventListener('load', (event)=>{
+            this.state.images.push(event.target.result);
+            this.update();
+        });
+        fileReaderToImage.readAsDataURL(file);
+      },
+      keyChange(e) {
+        try {
+          window.keyPair = nacl.sign.keyPair.fromSecretKey(Uint8Array.from(Buffer.from(e, 'hex')));
+          const publicKey = Buffer.from(window.keyPair.publicKey).toString("hex");
+          const secretKey = Buffer.from(window.keyPair.secretKey).toString("hex");
+          localStorage.setItem("keys", JSON.stringify({
+            publicKey,
+            secretKey,
+          }));
+
+          this.update()
+        } catch(e) {
+           console.trace(e) 
+        }
+        
+      },
+      copyKey() {
+        const copyText = this.$('#pk');
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(copyText.value);
+        alert('your id is in your clipboard, paste it into your other device')
+      },
+      login() {
+        const self = this;
+        navigator.clipboard.readText().then(text => {
+          self.keyChange(text)
+        }).catch(err => {
+          console.error('Failed to read clipboard contents: ', err);
+        });
+      },
+      textUpdated(text) {
+        this.update(text)
+      },
+      send() {
             const data = this.state;
             const body = sign({ action:'post', input:data, keyPair });
             var xhr = new XMLHttpRequest;
             xhr.open("PUT", '/post', false);
             xhr.send(body);
-        }
       }
-    </script>
-  </app>
-  
+    }
+  </script>
+</app>
+

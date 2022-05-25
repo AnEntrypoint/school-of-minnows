@@ -30,53 +30,62 @@ setTimeout(()=>{
     process.exit();
 },3600000)
 const run = async () => {
-    console.log('vote run', vest)
+    console.log('getting dynammics');
     let props = await chain.api.getDynamicGlobalPropertiesAsync()
-    let price = parseFloat((await chain.api.getCurrentMedianHistoryPriceAsync()).base.split(' ')[0])
+    console.log('getting price');
+    const getprice = await chain.api.getCurrentMedianHistoryPriceAsync||(()=>1);
+    let price = parseFloat((getprice()).base?.split(' ')[0])||1;
     let fund = await chain.api.getRewardFundAsync('post');
-    const members = fs.readdirSync('member-' + vest);
+    const members = fs.readdirSync('data/member-' + vest);
 
-    const pindexes = fs.readdirSync('post-' + vest);
+    const pindexes = fs.readdirSync('data/post-' + vest);
     const posts = [];
+    console.log('test');
     for (const pindex of pindexes) {
         if((parseFloat(pindex)+604800000-new Date().getTime())<0) {
             console.log('post over  7 days')
-            fs.unlinkSync('post-' + vest + '/' + pindex);
+            fs.unlinkSync('data/post-' + vest + '/' + pindex);
             continue;
         }
         let post;
         try {
-            post = JSON.parse(fs.readFileSync('post-' + vest + '/' + pindex));
+            post = JSON.parse(fs.readFileSync('data/post-' + vest + '/' + pindex));
         } catch(e) {
-            fs.unlinkSync('post-' + vest + '/' + pindex);
+            fs.unlinkSync('data/post-' + vest + '/' + pindex);
             continue;
         }
         if((new Date(post.last_update).getTime()+604800000-new Date().getTime())<0) {
             console.log('post over 7 days')
-            fs.unlinkSync('post-' + vest + '/' + pindex);
+            fs.unlinkSync('data/post-' + vest + '/' + pindex);
             continue;
         }
         if(!post) continue;
         if (new Date().getTime() - parseInt(pindex) < (60000 * 15)) {
-            console.log('post under 15 minutes')
             continue;
         }
-        console.log(post.permlink);
         if(post.active_votes > members.length*0.85) {
             console.log('post over 85% votes')
-            fs.unlinkSync('post-' + vest + '/' + pindex);
+            fs.unlinkSync('data/post-' + vest + '/' + pindex);
             continue;
         }
         if(!post.author) {
             console.log('no post author')
-            fs.unlinkSync('post-' + vest + '/' + pindex);
+            fs.unlinkSync('data/post-' + vest + '/' + pindex);
             continue;
         }
-        const posteraltruism = fs.existsSync('altruism-' + vest + '/' + post.author) ? JSON.parse(fs.readFileSync('altruism-' + vest + '/' + post.author)) : { up: 0, down: 0 };
-        if (!post.last_round || new Date().getTime() - post.last_round > (1000 * 60)) {
+
+        const posteraltruism = fs.existsSync('data/altruism-' + vest + '/' + post.author) ? JSON.parse(fs.readFileSync('data/altruism-' + vest + '/' + post.author)) : { up: 0, down: 25, last:new Date().getTime() };
+        if(posteraltruism.down == 24.36287603576817) {
+            posteraltruism.down = posteraltruism.down = 0;
+            fs.writeFileSync('data/altruism-' + vest + '/' + post.author, JSON.stringify(posteraltruism));
+        }
+        if(!posteraltruism.last || new Date().getTime() - posteraltruism.last > 86400000) {
+            posteraltruism.down = posteraltruism.down * 0.97;
+            posteraltruism.last = new Date().getTime();
+            fs.writeFileSync('data/altruism-' + vest + '/' + post.author, JSON.stringify(posteraltruism));
+        }
+        if (!post.last_round || new Date().getTime() - post.last_round > (1000 * 180)) {
             posts.push({ post, pindex, posteraltruism });
-        } else {
-            console.log('post last round too recent')
         }
     }
     posts.sort((a, b) => { return (b.posteraltruism.up - b.posteraltruism.down)-(a.posteraltruism.up - a.posteraltruism.down) });
@@ -86,29 +95,57 @@ const run = async () => {
         try {
             post = data.post = await chain.api.getContentAsync(data.post.author, data.post.permlink);
         } catch(e) {
+            console.log(data.post.author, data.post.permlink);
             console.error(e.message);
+            console.trace(e);
+            fs.unlinkSync('data/post-' + vest + '/' + pindex);
         }
         if(!post) return;
         //console.log(post.permlink, 'by', post.author)
         if((new Date(post.last_update_time).getTime()+604800000-new Date().getTime())<0) {
             console.log('post over 7 days')
-            fs.unlinkSync('post-' + vest + '/' + pindex);
+            fs.unlinkSync('data/post-' + vest + '/' + pindex);
             return;
         }
+
         post.last_round = new Date().getTime();
-        fs.writeFileSync('post-' + vest + '/' + pindex, JSON.stringify(post));
+        fs.writeFileSync('data/post-' + vest + '/' + pindex, JSON.stringify(post));
         let smembers = [];
-        for(name of members) {
-            const json = fs.readFileSync('member-' + vest + '/' + name);
+        try {
+            const cancelled = fs.readFileSync('data/cancelled-' + vest + '/' + post.author);
+            if (cancelled) {
+                fs.unlinkSync('data/post-' + vest + '/' + pindex);
+                return;
+            }
+        } catch(e) {
+        }
+        for(const name of members) {
+            const json = fs.readFileSync('data/member-' + vest + '/' + name);
             try {
                 const account = JSON.parse(json);
                 let add = true;
-                if(post.active_votes.filter(a => { return a.voter == name }).length) add = false;
+                if(post.active_votes.filter(a => { return a.voter == name }).length) {
+                    add = false;
+                }
+                if(new Date().getTime() - account.last_round < 60000) {
+                    add = false;
+                }
+
+                if (post.author == name) {
+                    add = false;
+                }
+                if(getRc(account, props) < 98 ) {
+                    add = false
+                }
+        
                 if(add) smembers.push(account);
 
             } catch(e) {
+                console.error(e);
+                console.trace(e);
+
                 const account = (await chain.api.getAccountsAsync([name]))[0];
-                fs.writeFileSync('member-' + vest + '/' + name, JSON.stringify(account));
+                fs.writeFileSync('data/member-' + vest + '/' + name, JSON.stringify(account));
                 continue;
             }
         }
@@ -123,13 +160,21 @@ const run = async () => {
                 continue;
             }
             if(new Date().getTime() - new Date(memberData.last_vote_time).getTime() < 6000) {
-                console.log(memberData.name, 'voted too recently');
                 continue;
             }
-            if (post.author == name) {
-                console.log(memberData.name, 'is the author');
+            const r = await client.rc.getRCMana(name);
+            //const v = await client.rc.getVPMana(name);
+            //if(v.current_mana < 14485) {
+            //    console.log(name, 'too low vp mana on file', name, v.current_mana)
+            //    continue;
+            //}
+            if(r.current_mana < 150144850) {
+                console.log(name, 'too low rc mana on file', name, r.current_mana)
+                memberData.last_round = new Date().getTime()+3600000;
+                fs.writeFileSync('data/member-' + vest + '/' + name, JSON.stringify(memberData));
                 continue;
             }
+
             var authed = false;
             const account = (await chain.api.getAccountsAsync([name]))[0];
             if(account.posting.account_auths.length) {
@@ -141,11 +186,11 @@ const run = async () => {
             }
 
             if(!authed) {
-                fs.unlinkSync("member-"+vest+"/"+account.name);
+                fs.unlinkSync("data/member-"+vest+"/"+account.name);
                 console.log(memberData.name, 'not authed');
                 continue;
             }
-            fs.writeFileSync('member-' + vest + '/' + name, JSON.stringify(account));
+            fs.writeFileSync('data/member-' + vest + '/' + name, JSON.stringify(account));
 
             if(new Date().getTime() - new Date(account.last_vote_time).getTime() < 6000) {
                 console.log('too recently voted on chain')
@@ -163,16 +208,6 @@ const run = async () => {
             }
             const value = await getValue(account, fund, price);
 
-            const rc = await client.rc.getRCMana(account.name);
-            const vp = await client.rc.getVPMana(account.name);
-            if(vp.current_mana < 14485) {
-                console.log(name, 'too low vp mana on chain', getRc(account, props), getRc(memberData, props), post.permlink)
-                continue;
-            }
-            if(rc.current_mana < 150144850) {
-                console.log(name, 'too low rc mana on chain', getRc(account, props), getRc(memberData, props), post.permlink)
-                continue;
-            }
             let weight = 10000;
             if (value > 0.10) {
                 weight = (1 / (value / 0.10)) * 10000;
@@ -189,7 +224,7 @@ const run = async () => {
                 },
             ];
             const modAlt = (name, mod, quant)=>{
-                const file = 'altruism-' + vest + '/' + name;
+                const file = 'data/altruism-' + vest + '/' + name;
                 let alt = { up:0, down:0 }
                 if(fs.existsSync(file)) {
                     alt = JSON.parse(fs.readFileSync(file));
@@ -206,10 +241,10 @@ const run = async () => {
                 modAlt(name, 'up', quant);
                 modAlt(post.author,'down',quant);
                 account.last_vote_time = new Date().getTime();
-                fs.writeFileSync('member-' + vest + '/' + name, JSON.stringify(account));
+                fs.writeFileSync('data/member-' + vest + '/' + name, JSON.stringify(account));
             } catch(e) {
                 console.error(e.message);
-                
+                console.trace(e);
                 return;
             }
             if(votes>10)return true;
@@ -225,12 +260,14 @@ const run = async () => {
                 }
             } catch (e) {
                 console.error(e);
+                console.trace(e);
             }
         }
     } catch(e) {
         console.error(e);
+        console.trace(e);
     }
-    setTimeout(run, 0);
+    setTimeout(run, 5000);
 }
 setTimeout(run, 1000);
 setInterval(()=>{
@@ -240,6 +277,6 @@ setInterval(()=>{
     rates.forEach((r)=>{
         rate += r/rates.length;
     });
-    fs.writeFileSync('rate-'+vest, votes.toString());
+    fs.writeFileSync('data/rate-'+vest, votes.toString());
     votes = 0;
 }, 30000)
