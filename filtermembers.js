@@ -4,7 +4,7 @@ const fs = require('fs');
     let acc = fs.readdirSync('member-'+vest); 
     const done = [];
     for(let aindex of acc) {
-        const account = fs.readFileSync('member-'+vest+'/'+aindex);
+        const account = fs.readFileSync('data/member-'+vest+'/'+aindex);
         const filter = 'blog';
         const query = {
             tag: aindex,
@@ -12,7 +12,7 @@ const fs = require('fs');
         };
         const discussions = await client.database.getDiscussions(filter, query);
         discussions.forEach((post)=>{
-            fs.writeFileSync('post-'+vest+'/'+new Date().getTime(), JSON.stringify(post))
+            fs.writeFileSync('data/post-'+vest+'/'+new Date().getTime(), JSON.stringify(post))
         })
     }
 })()

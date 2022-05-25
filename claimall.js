@@ -43,27 +43,27 @@ claim = async (account) => {
     //await new Promise(res => feed.on('ready', res));
     const out = [];
     var x=0;
-    const accounts = fs.readdirSync('member-hive')
+    const accounts = fs.readdirSync('data/member-hive')
         for(const name of accounts) {
-            const account = JSON.parse(fs.readFileSync('member-hive/'+name))
+            const account = JSON.parse(fs.readFileSync('data/member-hive/'+name))
             if(account.posting.account_auths.length) {
                 for(let auth of account.posting.account_auths) {
                     if(auth[0] == 'minnowschool') {
                         const rc = await getRc(account);
-                        /*if(rc > 0 && rc > 80) {
+                        if(rc > 0 && rc > 80) {
                             console.log(x++)
                             console.log(account.name)
                             const accounts = await hivejs.api.getAccountsAsync([account.name]);
                             console.log(accounts)
                             await claim(accounts[0]);
                             await new Promise(res => setTimeout(res, 1000));
-                        }*/
-                        let posts = await hivejs.api.getBlogAsync(name, 0, 30);
+                        }
+                        /*let posts = await hivejs.api.getBlogAsync(name, 0, 30);
                         for(let post of posts) {
                             if((new Date(post.comment.created).getTime())+604800000-new Date().getTime()>0) {
                                 fs.writeFileSync("post-hive/" + new Date().getTime(), JSON.stringify(post.comment, null, 2));
                             }
-                        }
+                        }*/
                     }
                 }
             }
