@@ -11,9 +11,13 @@ module.exports = (meme, post) => {
     client.on('messageCreate', msg => {
         if(msg.author.bot) return;
         if(msg.author.id === client.user.id) return;
+        try {
         if(vest == 'hive') axios.get('https://lann8n.matic.ml/webhook/3a58bd92-76ca-4bbb-a24c-8399942959de', {
             params: msg
         })
+        } catch(e) {
+
+        }
 
         if (msg.content.startsWith('.stats')) {
             const username = msg.content.replace('.stats ', '').replace('.stats', '');

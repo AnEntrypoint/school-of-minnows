@@ -20,9 +20,9 @@ const getMembers = async () => {
       );
       if (
         CURRENT_UNIX_TIMESTAMP -
-          parseInt(
-            (new Date(account.last_root_post).getTime() / 1000).toFixed(0)
-          ) <
+        parseInt(
+          (new Date(account.last_root_post).getTime() / 1000).toFixed(0)
+        ) <
         360
       ) {
         console.log("posted last 5 minutes");
@@ -107,18 +107,27 @@ module.exports = (msgtitle, imglink, id) => {
     return;
   }
   const title = msgtitle || "An ENTRYPOINT MEME";
-  const body = `# Brought to you by ENTRYPOINT
+
+  const madeby = ['provisioned by', 'created by', 'brought to you by', 'made with ♥ by'];
+  const someonefrom = ['a member of', 'someone from', 'one of the OG members of this social network, from', 'a most illustrious member of'];
+  const group = ['ENTRYPOINT', 'ONETHREETHREESEVEN', 'this social networks original community', 'heclgang'];
+  const slogan = ['🕉 we are one 🕉', 'we are onethreethreeseven', 'we like triangles', 'in cheese we trust', 'we are heclgang'];
+  const hashtags = ['weareone', 'weareonethreethreeseven', 'heclgang', 'onethreethreeseven', 'entrypoint', 'meme'];
+  const effect = ["prove that you are not a robot", 'become part of a living community', 'solve earth', 'speed run life', 'make yourself famous', 'be the meme'];
+  const getr = (textArray) => { return textArray[Math.floor(Math.random() * textArray.length)] }
+  const tags = `${getr(hashtags)} ${getr(hashtags)} ${getr(hashtags)}`;
+  const body = `# ${getr(madeby)} ${getr(someonefrom)} ${getr(group)}
 
 ${imglink}
 
-A heclgang meme
-🕉 we are one 🕉
+A ${getr(group)} meme
+${getr(slogan)}
 
-Visit entrypoint discord https://discord.gg/NED33mNpms and become part of a living community!
-#weareone #onethreethreeseven
+Don't be a NPC! Visit ${getr(group)} discord https://discord.gg/NED33mNpms and ${getr(effect)}!
+${tags}
 `;
 
-  const taglist = "meme weareone onethreethreeseven heclgang entrypoint".split(
+  const taglist = tags.split(
     " "
   );
   const json_metadata = JSON.stringify({ tags: taglist });

@@ -6,7 +6,6 @@ const Packr = require("msgpackr").Packr;
 const packr = new Packr();
 var bodyParser = require('body-parser')
 global.crypto = require("hypercore-crypto");
-const fs = require('fs');
 
 const verify = (message) => {
       const input = packr.unpack(message);

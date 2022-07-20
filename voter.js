@@ -40,7 +40,6 @@ const run = async () => {
 
     const pindexes = fs.readdirSync('data/post-' + vest);
     const posts = [];
-    console.log('test');
     for (const pindex of pindexes) {
         if((parseFloat(pindex)+604800000-new Date().getTime())<0) {
             console.log('post over  7 days')
