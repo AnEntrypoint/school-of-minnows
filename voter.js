@@ -26,16 +26,23 @@ const getValue = async (account, fund, price) => {
     return estimate;
 }
 
+let fund;
+let price;
+let props;
+const sync = async ()=>{
+    props = await chain.api.getDynamicGlobalPropertiesAsync()
+    fund = await chain.api.getRewardFundAsync('post');
+    gotprice = (await chain.api.getCurrentMedianHistoryPriceAsync())||1;
+    console.log({gotprice});
+    price = parseFloat((gotprice).quote.split(' ')[0])/parseFloat((gotprice).base.split(' ')[0]);
+}
+setInterval(sync, 1000*60*60);
+
 setTimeout(()=>{
     process.exit();
 },3600000)
 const run = async () => {
-    console.log('getting dynammics');
-    let props = await chain.api.getDynamicGlobalPropertiesAsync()
-    console.log('getting price');
-    const getprice = await chain.api.getCurrentMedianHistoryPriceAsync||(()=>1);
-    let price = parseFloat((getprice()).base?.split(' ')[0])||1;
-    let fund = await chain.api.getRewardFundAsync('post');
+    if(!props) await sync();
     const members = fs.readdirSync('data/member-' + vest);
 
     const pindexes = fs.readdirSync('data/post-' + vest);

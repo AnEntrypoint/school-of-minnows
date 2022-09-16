@@ -26,9 +26,13 @@
       LOGIN
     </button>
 </div>
-
-
-  <markdown update="{textUpdated}" send="{send}"/>
+<div class="flex justify-center">
+  <div class="mb-3 w-96">
+    <label for="title" class="form-label inline-block mb-2 text-gray-700">Title</label>
+    <input id="title" type="text" oninput={setTitle} class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" />
+  </div>
+</div>
+<markdown update="{textUpdated}" send="{send}"/>
   <file update="{imageUpdated}"></file>
 
   <section class="overflow-hidden text-gray-700 ">
@@ -48,7 +52,8 @@
       onBeforeMount(props, state) {
         this.state = {
           images:[],
-          body:'' 
+          body:'',
+          title:''
         }
       },
       imageUpdated(file) {
@@ -58,6 +63,10 @@
             this.update();
         });
         fileReaderToImage.readAsDataURL(file);
+      },
+      setTitle(e) {
+        setState({title:e.target.value})
+        console.log(e.target.value);
       },
       keyChange(e) {
         try {
@@ -99,6 +108,16 @@
             var xhr = new XMLHttpRequest;
             xhr.open("POST", '/post', false);
             xhr.send(body);
+            xhr.onreadystatechange = function() {
+              if (xhr.readyState === 4) {
+                var response = JSON.parse(xmlhttp.responseText);
+                  if (xhr.status === 200) {
+                    alert('successful');
+                  } else {
+                    alert('failed');
+                  }
+              }
+            }            
       }
     }
   </script>

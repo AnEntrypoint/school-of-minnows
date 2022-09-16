@@ -9,6 +9,28 @@ const getMembers = () => {
 setInterval(getMembers, 60000);
 getMembers();
 
+let fund;
+let price;
+const sync = async ()=>{
+    console.log('getting price');
+    fund = await chain.api.getRewardFundAsync('post');
+    gotprice = (await chain.api.getCurrentMedianHistoryPriceAsync())||1;
+    console.log({gotprice});
+    price = parseFloat((gotprice).quote.split(' ')[0])/parseFloat((gotprice).base.split(' ')[0]);
+}
+setInterval(sync, 1000*60*60);
+sync();
+const getValue = async (name) => {
+    const account = (await chain.api.getAccountsAsync([name]))[0];
+    const total_vests = parseFloat(account.vesting_shares.split(' ')[0]) + parseFloat(account.received_vesting_shares.split(' ')[0]) - parseFloat(account.delegated_vesting_shares.split(' ')[0]);
+    const final_vest = total_vests * 1e6;
+    const power = (account.voting_power * 100 / 10000) / 50;
+    const rshares = power * final_vest / 10000;
+    const estimate = rshares / parseFloat(fund.recent_claims) * parseFloat(fund.reward_balance.split(' ')[0]) * price;
+    return estimate;
+}
+
+
 const blacklisters = {};
 (async () => {
 
@@ -16,8 +38,11 @@ const blacklisters = {};
         last = new Date().getTime();
         try {
             if (operations && operations[0] == 'vote') {
-
-                if (operations[1].weight < 0) {
+                if (!members.includes(operations[1].author)) {
+                    return;
+                }
+                if (operations[1].weight < - 0) {
+                    if(await getValue(operations[1].voter) < 1) return;
                     try {
                         blacklisters[operations[1].voter] = parseInt(fs.readFileSync("data/blacklisters/" + operations[1].voter));
                     } catch (e) {
@@ -60,8 +85,8 @@ const blacklisters = {};
                         const op = [
                             "comment",
                             {
-                                author: vest==='hive'?'freshminnow':'minnowpromo',
-                                body: 'This is a one-time notice from SCHOOL OF MINNOWS, a free value added service on ' + vest + '.\nGetting started on ' + vest + ' can be super hard on these social platforms 😪 but luckily there is some communities that help support the little guy 😊, you might like school of minnows, we join forces with lots of other small accounts to help each other grow! \nFinally a good curation trail that helps its users achieve rapid growth, its fun on a bun! check it out. https://plu.sh/somland/',
+                                author: 'angelsands',
+                                body: 'This is a one-time notice about a free service on ' + vest + '.\nThere are communities that help support the little guy 😊, you might like ours, we join forces with lots of other small accounts to help each other grow! \nFinally a good curation trail that helps its users achieve rapid growth, its fun on a bun! check it out. https://plu.sh/altlan',
                                 json_metadata: JSON.stringify({}),
                                 parent_author: post.author,
                                 parent_permlink: post.permlink,
@@ -79,6 +104,7 @@ const blacklisters = {};
                             fs.writeFileSync("data/discord-" + vest + "/" + post.author, post.body);
                         } else {
                             fs.writeFileSync("data/post-" + vest + "/" + new Date().getTime(), JSON.stringify(operations[1], null, 2));
+                            fs.writeFileSync("data/reblog-" + vest + "/" + new Date().getTime(), JSON.stringify(operations[1], null, 2));
                         }
                         console.log('member post');
                     }
