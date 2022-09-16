@@ -25,7 +25,7 @@ advertorial  = () => {
   const owntools = ['Alternatively, you can also use your own tools or wallet to delegate voting access to the @minnowschool account, the system will likewise detect it automatically.', 'you can also sign the authentication yourself if your tools allows you to do it, the account is @minnowschool the system will pick you up automatically', 'you can also sign voting auth to @minnowschool yourself, the rest is automatic']
   const body = `tl;dr: ${getr(youallow)} ${getr(voteforyou)} ${getr(whenyoureidle)}, ${getr(automatic)}, ${getr(nointerference)}.
   
-  Find out how to join here: https://plu.sh/somland/
+  Find out how to join here: https://plu.sh/altlan/
 
 https://media.discordapp.net/attachments/880507766345728100/914191196652445716/5vq702.png
 
@@ -49,7 +49,7 @@ ${getr(opensource)}
 
 ${getr(owntools)}
 
-Find out how to join here: https://plu.sh/somland/
+Find out how to join here: https://plu.sh/altlan/
 
 ${getr(madeby)}`;
 
