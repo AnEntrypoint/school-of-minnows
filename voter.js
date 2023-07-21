@@ -79,8 +79,12 @@ const run = async () => {
             fs.unlinkSync('data/post-' + vest + '/' + pindex);
             continue;
         }
-
-        const posteraltruism = fs.existsSync('data/altruism-' + vest + '/' + post.author) ? JSON.parse(fs.readFileSync('data/altruism-' + vest + '/' + post.author)) : { up: 0, down: 25, last:new Date().getTime() };
+        let posteraltruism;
+        try {
+            posteraltruism = fs.existsSync('data/altruism-' + vest + '/' + post.author) ? JSON.parse(fs.readFileSync('data/altruism-' + vest + '/' + post.author)) : { up: 0, down: 25, last:new Date().getTime() }
+        } catch {
+            posteraltruism = { up: 0, down: 25, last:new Date().getTime() };
+        }
         if(posteraltruism.down == 24.36287603576817) {
             posteraltruism.down = posteraltruism.down = 0;
             fs.writeFileSync('data/altruism-' + vest + '/' + post.author, JSON.stringify(posteraltruism));
@@ -126,8 +130,9 @@ const run = async () => {
         } catch(e) {
         }
         for(const name of members) {
-            const json = fs.readFileSync('data/member-' + vest + '/' + name);
+            let json = fs.readFileSync('data/member-' + vest + '/' + name);
             try {
+                //console.log({name});
                 const account = JSON.parse(json);
                 let add = true;
                 if(post.active_votes.filter(a => { return a.voter == name }).length) {
@@ -174,7 +179,7 @@ const run = async () => {
             //    console.log(name, 'too low vp mana on file', name, v.current_mana)
             //    continue;
             //}
-            if(r.current_mana < 150144850) {
+            if(r.current_mana < 300144850) {
                 console.log(name, 'too low rc mana on file', name, r.current_mana)
                 memberData.last_round = new Date().getTime()+3600000;
                 fs.writeFileSync('data/member-' + vest + '/' + name, JSON.stringify(memberData));
@@ -233,7 +238,12 @@ const run = async () => {
                 const file = 'data/altruism-' + vest + '/' + name;
                 let alt = { up:0, down:0 }
                 if(fs.existsSync(file)) {
-                    alt = JSON.parse(fs.readFileSync(file));
+                    try {
+                        alt = JSON.parse(fs.readFileSync(file)||"{}");
+
+                    } catch(e) {
+                        alt = {};
+                    }
                 }
                 alt[mod] += quant;
                 fs.writeFileSync(file, JSON.stringify(alt));

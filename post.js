@@ -55,13 +55,13 @@ module.exports = (paragraphs, images, id, msg) => {
     {
       author: name,
       permlink: permlink.toString("hex"),
-      max_accepted_payout: "1000000000 HBD",
-      percent_hbd: 0,
+      max_accepted_payout: "1000000000 "+global.dollar.toUpperCase(),
       allow_votes: true,
       allow_curation_rewards: true,
       extensions: [],
     }
   ];
+  op[3][`percent_${global.dollar.toUpperCase()}`]=100
   fs.writeFileSync(
     "created-" + vest + "/" + permlink.toString("hex"),
     JSON.stringify(op)

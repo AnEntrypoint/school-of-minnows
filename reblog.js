@@ -1,10 +1,13 @@
 const fs = require("fs");
 require("./advertorial.js");
 let discord = {};
-const accountname = 'angelsands';
+const accountname = 'schoolofminnows';
 const reblog = async () => {
+  count = 0;
   let posts = fs.readdirSync("data/reblog-" + vest);
   for (let post of posts) {
+    count++;
+    if(count == 5) return;
     console.log('processing')
     try {
       //const account = (await chain.api.getAccountsAsync([accountname]))[0];
