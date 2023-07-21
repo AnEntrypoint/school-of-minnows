@@ -4,6 +4,8 @@ const fs = require('fs');
 const axios = require('axios').default;
 module.exports = (meme, post) => {
     const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] }); //create new client
+
+    
     client.on('ready', () => {
         console.log(`Logged in as ${client.user.tag}!`);
     });
@@ -12,9 +14,9 @@ module.exports = (meme, post) => {
         if(msg.author.bot) return;
         if(msg.author.id === client.user.id) return;
         try {
-        if(vest == 'hive') axios.get('https://lann8n.matic.ml/webhook/3a58bd92-76ca-4bbb-a24c-8399942959de', {
+        /*if(vest == 'hive') axios.get('https://lann8n.matic.ml/webhook/3a58bd92-76ca-4bbb-a24c-8399942959de', {
             params: msg
-        })
+        })*/
         } catch(e) {
 
         }

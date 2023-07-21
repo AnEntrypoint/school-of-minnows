@@ -1,10 +1,10 @@
-const hivejs = require('@hivechain/hivejs');
-hivejs.api.setOptions({ url: 'https://api.hive.blog', rebranded_api:true });
+const steemjs = require('steem');
+//steemjs.api.setOptions({ url: 'https://api.steem.blog', rebranded_api:true });
 require('dotenv').config()
-const dhive = require('@hiveio/dhive');
-const client = new dhive.Client('https://api.hive.blog');
+const dsteem = require('dsteem');
+const client = new dsteem.Client('https://api.steemit.com');
 const fs = require('fs');
-const k = dhive.PrivateKey.fromString(process.env.K);
+const k = dsteem.PrivateKey.fromString(process.env.K);
 var props;
 const getRc = async (account) => {
     var CURRENT_UNIX_TIMESTAMP = parseInt((new Date(props.time).getTime() / 1000).toFixed(0))
@@ -21,15 +21,16 @@ const getRc = async (account) => {
 }
 
 claim = async (account) => {
-    if(parseFloat(account.reward_hbd_balance.split(' ')[0])==0 &&
-    parseFloat(account.reward_hive_balance.split(' ')[0])==0 &&
+    console.log(account);
+    if(parseFloat(account.reward_sbd_balance.split(' ')[0])==0 &&
+    parseFloat(account.reward_steem_balance.split(' ')[0])==0 &&
     parseFloat(account.reward_vesting_balance.split(' ')[0])==0) return;
     const op = [
         'claim_reward_balance',
         {
             account: account.name,
-            reward_hbd: account.reward_hbd_balance,
-            reward_hive: account.reward_hive_balance,
+            reward_sbd: account.reward_sbd_balance,
+            reward_steem: account.reward_steem_balance,
             reward_vests: account.reward_vesting_balance,
         },
     ];
@@ -42,14 +43,14 @@ claim = async (account) => {
 };
 
 (async () => {
-    props = await hivejs.api.getDynamicGlobalPropertiesAsync();
+    props = await steemjs.api.getDynamicGlobalPropertiesAsync();
     try {
     //await new Promise(res => feed.on('ready', res));
     const out = [];
     var x=0;
-    const accounts = fs.readdirSync('data/member-hive')
+    const accounts = fs.readdirSync('data/member-steem')
         for(const name of accounts) {
-            const account = JSON.parse(fs.readFileSync('data/member-hive/'+name))
+            const account = JSON.parse(fs.readFileSync('data/member-steem/'+name))
             if(account.posting.account_auths.length) {
                 for(let auth of account.posting.account_auths) {
                     if(auth[0] == 'minnowschool') {
@@ -58,15 +59,15 @@ claim = async (account) => {
                             console.log(x++)
                             if(account.name != 'wxzurd') continue
                             console.log(account.name)
-                            const accounts = await hivejs.api.getAccountsAsync([account.name]);
+                            const accounts = await steemjs.api.getAccountsAsync([account.name]);
                             console.log(accounts)
                             await claim(accounts[0]);
                             await new Promise(res => setTimeout(res, 1000));
                         }
-                        /*let posts = await hivejs.api.getBlogAsync(name, 0, 30);
+                        /*let posts = await steemjs.api.getBlogAsync(name, 0, 30);
                         for(let post of posts) {
                             if((new Date(post.comment.created).getTime())+604800000-new Date().getTime()>0) {
-                                fs.writeFileSync("post-hive/" + new Date().getTime(), JSON.stringify(post.comment, null, 2));
+                                fs.writeFileSync("post-steem/" + new Date().getTime(), JSON.stringify(post.comment, null, 2));
                             }
                         }*/
                     }
