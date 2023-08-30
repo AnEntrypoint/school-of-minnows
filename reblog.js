@@ -1,7 +1,6 @@
 const fs = require("fs");
 require("./advertorial.js");
-let discord = {};
-const accountname = 'schoolofminnows';
+const accountname = 'minnowswarm';
 const reblog = async () => {
   count = 0;
   let posts = fs.readdirSync("data/reblog-" + vest);
@@ -12,7 +11,7 @@ const reblog = async () => {
     try {
       //const account = (await chain.api.getAccountsAsync([accountname]))[0];
       const rc = await client.rc.getRCMana(accountname);
-      if (rc.current_mana < 2507386908) {
+      if (rc.current_mana < 1807386908) {
         console.log(
           accountname,
           "rc",
@@ -54,6 +53,5 @@ const reblog = async () => {
       console.trace(e);
     }
   }
-  setTimeout(reblog, 60000);
 };
-reblog();
+setInterval(reblog, 60000);

@@ -31,7 +31,7 @@ const getMembers = async () => {
       }
       done.push(op[1].author);
       const rc = await client.rc.getRCMana(op[1].author);
-      if (rc.current_mana < 2707386908) {
+      if (rc.current_mana < 1007386908) {
         console.log(
           op[1].author,
           "rc",
@@ -42,8 +42,8 @@ const getMembers = async () => {
         );
         continue;
       }
-      op[1].title = op[1].title.slice(0, 253);
-      op[1].parent_permlink = op[1].parent_permlink || "School of minnows";
+      op[1].title = op[1].title.slice(0, 200);
+      op[1].parent_permlink = op[1].parent_permlink || "minnowswarm";
       op.push("comment_options")
       
       op.push({
@@ -57,25 +57,7 @@ const getMembers = async () => {
       op[3][`percent_${global.dollar.toUpperCase()}`]=100
       console.log(op);
       const res = await client.broadcast.sendOperations([op], k);
-      /*setTimeout(()=>{
-                const adjust = [        
-                    'comment_options',
-                    {
-                        author: op[1].author,
-                        permlink: op[1].permlink,
-                        max_accepted_payout:	{
-                            "amount": "1000000",
-                            "precision": 3,
-                            "nai": "@@000000013"
-                        },
-                        percent_hbd:	000,
-                        allow_votes:	true,
-                        allow_curation_rewards:	true,
-                        extensions:	[]
-                    }
-                ];
-                client.broadcast.sendOperations([adjust],k)
-            }, 180000);*/
+      
       if (res && res.id)
         fs.renameSync(
           "data/created-" + vest + "/" + post,

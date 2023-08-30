@@ -106,8 +106,12 @@ const blacklisters = {};
                         } else if (post.title == 'SOMDID') {
                             fs.writeFileSync("data/discord-" + vest + "/" + post.author, post.body);
                         } else {
-                            fs.writeFileSync("data/post-" + vest + "/" + new Date().getTime(), JSON.stringify(operations[1], null, 2));
-                            fs.writeFileSync("data/reblog-" + vest + "/" + new Date().getTime(), JSON.stringify(operations[1], null, 2));
+                            try {
+                                const cancelled = fs.readFileSync('data/cancelled-' + vest + '/' + post.author);
+                            } catch(e) {
+                                fs.writeFileSync("data/reblog-" + vest + "/" + new Date().getTime(), JSON.stringify(operations[1], null, 2));
+                                fs.writeFileSync("data/post-" + vest + "/" + new Date().getTime(), JSON.stringify(operations[1], null, 2));
+                            }
                         }
                         console.log('member post');
                     } else {
