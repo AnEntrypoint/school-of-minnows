@@ -48,8 +48,8 @@ const run = async () => {
     const pindexes = fs.readdirSync('data/post-' + vest);
     const posts = [];
     for (const pindex of pindexes) {
-        if((parseFloat(pindex)+604800000-new Date().getTime())<0) {
-            console.log('post over  7 days')
+        if((parseFloat(pindex)+518400000-new Date().getTime())<0) {
+            console.log('post over  6 days')
             fs.unlinkSync('data/post-' + vest + '/' + pindex);
             continue;
         }
@@ -60,13 +60,13 @@ const run = async () => {
             fs.unlinkSync('data/post-' + vest + '/' + pindex);
             continue;
         }
-        if((new Date(post.last_update).getTime()+604800000-new Date().getTime())<0) {
-            console.log('post over 7 days')
+        if((new Date(post.last_update).getTime()+518400000-new Date().getTime())<0) {
+            console.log('post over 6 days')
             fs.unlinkSync('data/post-' + vest + '/' + pindex);
             continue;
         }
         if(!post) continue;
-        if (new Date().getTime() - parseInt(pindex) < (60000 * 15)) {
+        if (new Date().getTime() - parseInt(pindex) < (60000 * 7920)) {
             continue;
         }
         if(post.active_votes > members.length*0.85) {
@@ -112,8 +112,8 @@ const run = async () => {
         }
         if(!post) return;
         //console.log(post.permlink, 'by', post.author)
-        if((new Date(post.last_update_time).getTime()+604800000-new Date().getTime())<0) {
-            console.log('post over 7 days')
+        if((new Date(post.last_update_time).getTime()+518400000-new Date().getTime())<0) {
+            console.log('post over 6 days')
             fs.unlinkSync('data/post-' + vest + '/' + pindex);
             return;
         }
