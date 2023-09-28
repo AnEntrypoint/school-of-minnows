@@ -70,7 +70,6 @@ ${getr(madeby)}`;
       title: title,
     },
   ];
-  fs.writeFileSync('data/advertorial-'+vest+'/last', permlink.toString("hex").toLowerCase())
   fs.writeFileSync(
     "data/created-"+vest+"/" + permlink.toString("hex"),
     JSON.stringify(op)

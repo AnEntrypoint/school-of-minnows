@@ -56,18 +56,13 @@ const getMembers = async () => {
       })
       op[3][`percent_${global.dollar.toUpperCase()}`]=100
       console.log(op);
-      const res = await client.broadcast.sendOperations([op], k);
+      fs.renameSync(
+        "data/created-" + vest + "/" + post,
+        "data/finished-" + vest + "/" + post
+      );
       
-      if (res && res.id)
-        fs.renameSync(
-          "data/created-" + vest + "/" + post,
-          "data/finished-" + vest + "/" + post
-        );
-      else
-        fs.renameSync(
-          "data/created-" + vest + "/" + post,
-          "data/failed-" + vest + "/" + post
-        );
+      await client.broadcast.sendOperations([op], k);
+      
     } catch (e) {
       console.trace(e);
       if (fs.existsSync("data/created-" + vest + "/" + post))

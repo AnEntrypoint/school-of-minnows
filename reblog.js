@@ -1,5 +1,4 @@
 const fs = require("fs");
-require("./advertorial.js");
 const accountname = 'minnowswarm';
 const reblog = async () => {
   count = 0;
