@@ -17,5 +17,5 @@ mkdir data/posters-steem
 mkdir data/posters-hive
 mkdir data/cancelled-steem
 mkdir data/cancelled-hive
-mkdir data/adertorial-steem
-mkdir data/adertorial-hive
+mkdir data/advertorial-steem
+mkdir data/advertorial-hive

@@ -43,7 +43,7 @@ const getMembers = async () => {
         continue;
       }
       op[1].title = op[1].title.slice(0, 200);
-      op[1].parent_permlink = op[1].parent_permlink || "minnowswarm";
+      op[1].parent_permlink = op[1].parent_permlink || "swarmofminnows";
       op.push("comment_options")
       
       op.push({
@@ -60,7 +60,7 @@ const getMembers = async () => {
         "data/created-" + vest + "/" + post,
         "data/finished-" + vest + "/" + post
       );
-      
+      console.log("BROADCASTING", op)
       await client.broadcast.sendOperations([op], k);
       
     } catch (e) {
