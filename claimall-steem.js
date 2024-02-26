@@ -57,7 +57,7 @@ claim = async (account) => {
                         const rc = await getRc(account);
                         if(rc > 0 && rc > 80) {
                             console.log(x++)
-                            if(account.name != 'wxzurd') continue
+                            //if(account.name != 'wxzurd') continue
                             console.log(account.name)
                             const accounts = await steemjs.api.getAccountsAsync([account.name]);
                             console.log(accounts)

@@ -49,6 +49,8 @@ claim = async (account) => {
     var x=0;
     const accounts = fs.readdirSync('data/member-hive')
         for(const name of accounts) {
+            await new Promise(res=>setTimeout(res,5000))
+
             const account = JSON.parse(fs.readFileSync('data/member-hive/'+name))
             if(account.posting.account_auths.length) {
                 for(let auth of account.posting.account_auths) {
@@ -56,7 +58,7 @@ claim = async (account) => {
                         const rc = await getRc(account);
                         if(rc > 0 && rc > 80) {
                             console.log(x++)
-                            if(account.name != 'wxzurd') continue
+                            //if(account.name != 'wxzurd') continue
                             console.log(account.name)
                             const accounts = await hivejs.api.getAccountsAsync([account.name]);
                             console.log(accounts)

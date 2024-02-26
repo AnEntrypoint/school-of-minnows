@@ -1,102 +1,563 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SOM Poster</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="https://glitch.com/favicon.ico" />
+
+    <title>🏫school of 🐠minnows</title>
+
+    <link
+      rel="canonical"
+      href="https://school-of-minnows--concept.glitch.me/"
+    />
+    <meta name="description" content="CHANGE-ME" />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:title" content="🏫school of 🐠minnows" />
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:url"
+      content="https://school-of-minnows--concept.glitch.me/"
+    />
+    <meta property="og:description" content="CHANGE-ME" />
+    <meta property="og:image" content="CHANGE-ME" />
+    <meta name="twitter:card" content="summary" />
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.17/tailwind-dark.min.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/codemirror.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/@tailwindcss/typography@0.2.x/dist/typography.min.css"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
     />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/tw-elements/dist/css/index.min.css"
     />
-    <script src="https://cdn.jsdelivr.net/npm/tw-elements/dist/js/index.min.js"></script>
-    <!--script src="https://github.com/devforth/painterro/releases/download/v1.2.78/painterro-1.2.78.min.js"></script-->
-
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
-  </head>
-  <body ><!-- onload="Painterro().show()" -->
-    <app></app>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/mode/markdown/markdown.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/idb-keyval@6/dist/umd.js"></script>
-    <script src="https://unpkg.com/moment@2.29.1/min/moment.min.js"></script>
-    <script src="https://unpkg.com/msgpackr@1.2.5/dist/index.js"></script>
-    <script src="https://unpkg.com/riot@6/riot+compiler.min.js"></script>
-    <script src="https://unpkg.com/tweetnacl@1.0.3/nacl.min.js"></script>
-    <script src="https://unpkg.com/@riotjs/route/route.js"></script>
-    <script src="https://bundle.run/buffer@6.0.3"></script>
-    <script type="riot" src="components/markdown.html"></script>
-    <script type="riot" src="components/file.html"></script>
-    <script type="riot" src="components/app.html"></script>
-    <script type="module">
-      (async () => {
-
-        // SIGNER
-        
-        window.packr = new msgpackr.Packr({ structuredClone: true });
-        const C = {
-          CONTRACT: 'c',
-          ACTION: 'a',
-          INPUT: 'i',
-          TRANSACTION: 't',
-          KEYS: 'k',
-          SIGNATURE: 's',
-          PUBLICKEY: 'k'
-        };
-        window.sign = (from) => {
-          const tx = {};
-          tx[C.ACTION] = from.action;
-          tx[C.INPUT] = from.input;
-          const keyUint8Array = new Uint8Array(Buffer.from(from.keyPair.secretKey, "hex"));
-          const packed = packr.pack(tx);
-          const out = {};
-          out[C.TRANSACTION] = new Uint8Array(packed);
-          out[C.SIGNATURE] = nacl.sign.detached(out[C.TRANSACTION], keyUint8Array);
-          out[C.PUBLICKEY] = new Uint8Array(Buffer.from(from.keyPair.publicKey, "hex"));
-          return packr.pack(out);
-        };
-        
-        window.Buffer = buffer.Buffer;
-        window.keyPair = JSON.parse(localStorage.getItem("keys"));
-        if (!window.keyPair) {
-          window.keyPair = nacl.sign.keyPair();
-          const save = {
-            publicKey: Buffer.from(window.keyPair.publicKey).toString("hex"),
-            secretKey: Buffer.from(window.keyPair.secretKey).toString("hex"),
-          };
-          localStorage.setItem("keys", JSON.stringify(save));
-          console.log("saved");
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        overflow: auto;
+        background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/1197275/oceanBackdrop.jpg); /*https://www.wuwm.com/post/poem-underwater-unsettlement#stream/0 */
+        background-size: cover;
+        background-repeat: no-repeat;
+      }
+      #tank {
+        width: 100%;
+        height: 100%;
+      }
+      .school {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+      }
+      .fish {
+        position: absolute;
+      }
+    </style>
+    <script>
+      window.joins = () => {
+        if (window.steem_keychain) {
+          steem_keychain.requestAddAccountAuthority(
+            prompt("Account name"),
+            "minnowschool",
+            "Posting",
+            "100",
+            function (response) {
+              console.log(response);
+            }
+          );
         } else {
-          window.keyPair.secretKey = Buffer.from(
-            window.keyPair.secretKey,
-            "hex"
-          );
-          window.keyPair.publicKey = Buffer.from(
-            window.keyPair.publicKey,
-            "hex"
-          );
+          alert("please ensure the steem keychain app is available");
         }
-        
-        
-        riot.register("router", route.Router);
-        riot.register("route", route.Route);
-        await riot.compile();
-        riot.mount("app");
-      })();
+      };
+      window.joinh = () => {
+        if (window.hive_keychain) {
+          hive_keychain.requestAddAccountAuthority(
+            prompt("Account name"),
+            "minnowschool",
+            "Posting",
+            "100",
+            function (response) {
+              console.log(response);
+            }
+          );
+        } else {
+          if (!window.steem_keychain) {
+            document.querySelectorAll('.steem').forEach(el=>{el.style.display = 'none'})
+          }
+          alert("please ensure the hive keychain app is available");
+        }
+      };
     </script>
+  </head>
+  <body>
+    <p id="controls"></p>
+    <div id="tank"></div>
+
+    <section class="mb-8 text-gray-800">
+      <div class="px-6 py-12 md:px-12 text-center lg:text-left">
+        <div class="container mx-auto">
+          <figcaption class="text-sm mb-4" style="color: hsl(218, 81%, 75%)">
+            Ａｎ🎙️Ｅｎｔｒｙｐ❍ｉｎｔ，<br />
+            <a target="_blank" href="https://dsc.gg/entrypoint">
+              <cite title="Source Title"
+                >ｐｒ❍ｂａｂｌｙ　ｅｎｔｅｒｉｎｇ❓</cite
+              >
+            </a>
+          </figcaption>
+          <div class="grid lg:grid-cols-2 gap-12 flex items-center">
+            <div class="mt-6 lg:mt-0">
+              <h1
+                class="text-5xl md:text-6xl xl:text-7xl font-bold tracking-tight mt-3 mb-6"
+                style="color: hsl(218, 81%, 95%)"
+              >
+                school of
+                <span style="color: hsl(218, 81%, 75%)">minnows</span>
+              </h1>
+
+              <h3
+                class="text-2xl md:text-3xl xl:text-5xl font-bold tracking-tight mb-3"
+                style="color: hsl(218, 81%, 95%)"
+              >
+                /scholē of
+                <span style="color: hsl(218, 81%, 75%)"> min-ohs</span>/
+                <code>🏫ｏ’🐠s</code>
+              </h3>
+            </div>
+
+            <figure>
+              <blockquote>
+                <h3 class="text-xl mb-" style="color: hsl(218, 81%, 95%)">
+                  <svg
+                    aria-hidden="true"
+                    focusable="false"
+                    data-prefix="fas"
+                    data-icon="quote-left"
+                    class="w-6 pr-2 inline-block"
+                    role="img"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewbox="0 0 512 512"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M464 256h-80v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8c-88.4 0-160 71.6-160 160v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48zm-288 0H96v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8C71.6 32 0 103.6 0 192v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48z"
+                    ></path>
+                  </svg>
+                  We may all be <em>different fish</em>,<br />
+                  but in this school <strong>we swim together</strong>
+                  <svg
+                    aria-hidden="true"
+                    focusable="false"
+                    data-prefix="fas"
+                    data-icon="quote-right"
+                    class="w-6 pr-2 inline-block"
+                    role="img"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewbox="0 0 512 512"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M464 32H336c-26.5 0-48 21.5-48 48v128c0 26.5 21.5 48 48 48h80v64c0 35.3-28.7 64-64 64h-8c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24h8c88.4 0 160-71.6 160-160V80c0-26.5-21.5-48-48-48zm-288 0H48C21.5 32 0 53.5 0 80v128c0 26.5 21.5 48 48 48h80v64c0 35.3-28.7 64-64 64h-8c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24h8c88.4 0 160-71.6 160-160V80c0-26.5-21.5-48-48-48z"
+                    />
+                  </svg>
+                </h3>
+              </blockquote>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-8 text-gray-800 text-center">
+      <div class="px-6 py-12 md:px-16 text-center">
+        <h1
+          class="text-5xl md:text-6xl xl:text-7xl font-bold tracking-tight mb-8"
+          style="color: hsl(218, 81%, 95%)"
+        >
+          so like, why <em>is</em> som so
+          <span style="color: hsl(218, 81%, 75%)">great ⁉️</span>
+        </h1>
+        <div class="lg:text-right">
+          <figure>
+            <blockquote>
+              <h3 class="text-xl" style="color: hsl(218, 81%, 95%)">
+                <svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="quote-left"
+                  class="w-6 pr-2 inline-block"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewbox="0 0 512 512"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M464 256h-80v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8c-88.4 0-160 71.6-160 160v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48zm-288 0H96v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8C71.6 32 0 103.6 0 192v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48z"
+                  ></path>
+                </svg>
+                <strong>Gain</strong> the <em>agility</em>,<br />
+                of a school of fish
+                <strong>and swim through life at one</strong> with nature.
+                <svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="quote-right"
+                  class="w-6 pr-2 inline-block"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewbox="0 0 512 512"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M464 32H336c-26.5 0-48 21.5-48 48v128c0 26.5 21.5 48 48 48h80v64c0 35.3-28.7 64-64 64h-8c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24h8c88.4 0 160-71.6 160-160V80c0-26.5-21.5-48-48-48zm-288 0H48C21.5 32 0 53.5 0 80v128c0 26.5 21.5 48 48 48h80v64c0 35.3-28.7 64-64 64h-8c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24h8c88.4 0 160-71.6 160-160V80c0-26.5-21.5-48-48-48z"
+                  />
+                </svg>
+              </h3>
+            </blockquote>
+          </figure>
+        </div>
+        <br /><br />
+        <div class="grid lg:gap-x-6 lg:grid-cols-3">
+          <div class="mb-12 lg:mb-0">
+            <div class="rounded-lg shadow-lg h-full block bg-white">
+              <div class="flex justify-center">
+                <div
+                  class="p-4 bg-blue-600 rounded-full shadow-lg inline-block -mt-8"
+                >
+                  <svg
+                    class="w-8 h-8 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewbox="0 0 512 512"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M192 208c0-17.67-14.33-32-32-32h-16c-35.35 0-64 28.65-64 64v48c0 35.35 28.65 64 64 64h16c17.67 0 32-14.33 32-32V208zm176 144c35.35 0 64-28.65 64-64v-48c0-35.35-28.65-64-64-64h-16c-17.67 0-32 14.33-32 32v112c0 17.67 14.33 32 32 32h16zM256 0C113.18 0 4.58 118.83 0 256v16c0 8.84 7.16 16 16 16h16c8.84 0 16-7.16 16-16v-16c0-114.69 93.31-208 208-208s208 93.31 208 208h-.12c.08 2.43.12 165.72.12 165.72 0 23.35-18.93 42.28-42.28 42.28H320c0-26.51-21.49-48-48-48h-32c-26.51 0-48 21.49-48 48s21.49 48 48 48h181.72c49.86 0 90.28-40.42 90.28-90.28V256C507.42 118.83 398.82 0 256 0z"
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="p-4">
+                <h5 class="text-3xl font-semibold mb-2">24/7 Support</h5>
+                <p class="text-xl">
+                  Meaning we go fiddle with it when it stops working 😅🤓
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-12 lg:mb-0">
+            <div class="rounded-lg shadow-lg h-full block bg-white">
+              <div class="flex justify-center">
+                <div
+                  class="p-4 bg-blue-600 rounded-full shadow-lg inline-block -mt-8"
+                >
+                  <svg
+                    class="w-8 h-8 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewbox="0 0 512 512"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M466.5 83.7l-192-80a48.15 48.15 0 0 0-36.9 0l-192 80C27.7 91.1 16 108.6 16 128c0 198.5 114.5 335.7 221.5 380.3 11.8 4.9 25.1 4.9 36.9 0C360.1 472.6 496 349.3 496 128c0-19.4-11.7-36.9-29.5-44.3zM256.1 446.3l-.1-381 175.9 73.3c-3.3 151.4-82.1 261.1-175.8 307.7z"
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="p-4">
+                <h5 class="text-3xl font-semibold mb-2">Safe and solid</h5>
+                <p class="text-xl">
+                  Why would we use unstable and unsafe products? multiple sign
+                  up mechanisms provided so you can use your favorite way
+                  (manual auth also works)
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="">
+            <div class="rounded-lg shadow-lg h-full block bg-white">
+              <div class="flex justify-center">
+                <div
+                  class="p-4 bg-blue-600 rounded-full shadow-lg inline-block -mt-8"
+                >
+                  <svg
+                    class="w-8 h-8 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewbox="0 0 512 512"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M505.12019,19.09375c-1.18945-5.53125-6.65819-11-12.207-12.1875C460.716,0,435.507,0,410.40747,0,307.17523,0,245.26909,55.20312,199.05238,128H94.83772c-16.34763.01562-35.55658,11.875-42.88664,26.48438L2.51562,253.29688A28.4,28.4,0,0,0,0,264a24.00867,24.00867,0,0,0,24.00582,24H127.81618l-22.47457,22.46875c-11.36521,11.36133-12.99607,32.25781,0,45.25L156.24582,406.625c11.15623,11.1875,32.15619,13.15625,45.27726,0l22.47457-22.46875V488a24.00867,24.00867,0,0,0,24.00581,24,28.55934,28.55934,0,0,0,10.707-2.51562l98.72834-49.39063c14.62888-7.29687,26.50776-26.5,26.50776-42.85937V312.79688c72.59753-46.3125,128.03493-108.40626,128.03493-211.09376C512.07526,76.5,512.07526,51.29688,505.12019,19.09375ZM384.04033,168A40,40,0,1,1,424.05,128,40.02322,40.02322,0,0,1,384.04033,168Z"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div class="p-4">
+                <h5 class="text-3xl font-semibold mb-2">Extremely fast</h5>
+                <p class="text-xl">
+                  <em>hyper</em>-<u><strong>light</strong></u> apps. even a 🥔
+                  can run it.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-8">
+      <div class="text-center">
+        <h1
+          class="text-5xl md:text-6xl xl:text-7xl font-bold tracking-tight mb-8"
+          style="color: hsl(218, 81%, 95%)"
+        >
+          Time to <em>school</em>
+          <span style="color: hsl(218, 81%, 75%)">them⁉️</span>
+        </h1>
+        <div class="inline-flex" class="hive"  role="group">
+          <button
+            onclick="joinh()"
+            type="button"
+            data-mdb-ripple-unbound="true"
+            data-mdb-ripple="true"
+            data-mdb-ripple-color="red"
+            class="z-10 inline-block px-6 py-2.5 text-white font-medium text-xl leading-tight uppercase rounded-r hover:bg-red-700 focus:bg-red-700 focus:outline-none focus:ring-0 active:bg-red-800 transition duration-150 ease-in-out"
+          >
+            hive keychain
+          </button>
+          <button
+            onclick="location.href=' https://hivesigner.com/authorize/@minnowschool/?redirect_uri=https%3A%2F%2Fcongrats-som.glitch.me%2F'"
+            type="button"
+            data-mdb-ripple-unbound="true"
+            data-mdb-ripple="true"
+            data-mdb-ripple-color="red"
+            class="z-10 inline-block px-6 py-2.5 text-white font-medium text-xl leading-tight uppercase rounded-r hover:bg-red-700 focus:bg-red-700 focus:outline-none focus:ring-0 active:bg-red-800 transition duration-150 ease-in-out"
+          >
+            hive signer
+          </button>
+        </div>
+
+        <div class="inline-flex" class="steem" role="group">
+          <button
+            onclick="joins()"
+            type="button"
+            data-mdb-ripple="true"
+            data-mdb-ripple-unbound="true"
+            data-mdb-ripple-color="aqua"
+            class="z-10 inline-block px-6 py-2.5 text-white font-medium text-xl leading-tight uppercase rounded-l hover:bg-teal-500 focus:bg-teal-500 focus:outline-none focus:ring-0 active:bg-teal-700-accent transition duration-150 ease-in-out"
+          >
+            steem keychain
+          </button>
+          <button
+            onclick="window.location = 'https://steemworld.org/'"
+            type="button"
+            data-mdb-ripple="true"
+            data-mdb-ripple-unbound="true"
+            data-mdb-ripple-color="aqua"
+            class="z-10 inline-block px-6 py-2.5 text-white font-medium text-xl leading-tight uppercase rounded-l hover:bg-teal-500 focus:bg-teal-500 focus:outline-none focus:ring-0 active:bg-teal-700-accent transition duration-150 ease-in-out"
+          >
+            steem alternative method
+          </button>
+          <button
+            onclick="window.location = 'https://schoolofminnows.glitch.me'"
+            type="button"
+            data-mdb-ripple="true"
+            data-mdb-ripple-unbound="true"
+            data-mdb-ripple-color="aqua"
+            class="z-10 inline-block px-6 py-2.5 text-white font-medium text-xl leading-tight uppercase rounded-l hover:bg-teal-500 focus:bg-teal-500 focus:outline-none focus:ring-0 active:bg-teal-700-accent transition duration-150 ease-in-out"
+          >
+            steem open source signup
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="text-gray-600">
+      <div class="container px-5 py-24 mx-auto">
+        <div class="flex flex-wrap -m-4">
+          <div class="p-4 md:w-1/3">
+            <div
+              class="h-full rounded-xl shadow-cla-blue bg-gradient-to-r from-indigo-50 to-blue-50 overflow-hidden"
+            >
+              <img
+                class="lg:h-48 md:h-36 w-full object-cover object-center scale-110 transition-all duration-400 hover:scale-100"
+                src="https://steemitimages.com/640x0/https://s3-us-west-2.amazonaws.com/steemhunt/production/steemhunt/2022-05-04/83f89231-MINNOWS.png"
+                alt="blog"
+              />
+              <div class="p-6">
+                <h2
+                  class="tracking-widest text-xs title-font font-medium text-gray-400 mb-1"
+                >
+                  Reason #1
+                </h2>
+                <h1 class="title-font text-lg font-medium text-gray-600 mb-3">
+                  Wait it does what❓
+                </h1>
+                <p class="text-gray-500 mb-6">
+                  Your voting power can not go over 100%. It waits till voting
+                  power is about to go to waste, then prevents that waste to
+                  support the group.
+                </p>
+                <p class="text-gray-500">
+                  If your voting power reaches close to 100% it will vote on
+                  your behalf for other group members.
+                </p>
+                <div class="flex items-center flex-wrap">
+                  <button>Learn more</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 md:w-1/3"></div>
+
+          <div class="p-4 md:w-1/3">
+            <div
+              class="h-full rounded-xl shadow-cla-violate bg-gradient-to-r from-pink-50 to-red-50 overflow-hidden"
+            >
+              <img
+                class="lg:h-48 md:h-36 w-full object-cover object-center scale-110 transition-all duration-400 hover:scale-100"
+                src="https://images.pexels.com/photos/4591799/pexels-photo-4591799.jpeg"
+                alt="blog"
+              />
+              <div class="p-6">
+                <h2
+                  class="tracking-widest text-xs title-font font-medium text-gray-400 mb-1"
+                >
+                  Reason #2
+                </h2>
+                <h1 class="title-font text-lg font-medium text-gray-600 mb-3">
+                  But how❓
+                </h1>
+                <p class="text-gray-500 mb-6">
+                  Your position for a vote is determined by how many votes has
+                  been produced on your behalf. You will be refunded for your
+                  votes, keep posting, keep letting it vote.
+                </p>
+                <p class="text-gray-500 mb-6">
+                  You'll get the maximum out, when you're behind, you will get
+                  more votes. When you're overpaid, it will spread to other
+                  users a bit first.
+                </p>
+                <p class="text-gray-500 mb-6">
+                  So if you don't post for a while, you can post more often to
+                  catch up.
+                </p>
+                <p class="text-gray-500 mb-6">
+                  You just join, and post, that's all you do, the more you let
+                  your voting idle, the more you'll get from the group.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-8">
+      <div class="text-center">
+        <h1
+          class="text-5xl md:text-6xl xl:text-7xl font-bold tracking-tight mb-8"
+          style="color: hsl(218, 81%, 95%)"
+        >
+          Time to <em>school</em>
+          <span style="color: hsl(218, 81%, 75%)">them⁉️</span>
+        </h1>
+        <div class="inline-flex" class="hive"  role="group">
+          <button
+            onclick="joinh()"
+            type="button"
+            data-mdb-ripple-unbound="true"
+            data-mdb-ripple="true"
+            data-mdb-ripple-color="red"
+            class="z-10 inline-block px-6 py-2.5 text-white font-medium text-xl leading-tight uppercase rounded-r hover:bg-red-700 focus:bg-red-700 focus:outline-none focus:ring-0 active:bg-red-800 transition duration-150 ease-in-out"
+          >
+            hive keychain
+          </button>
+          <button
+            onclick="location.href=' https://hivesigner.com/authorize/@minnowschool/?redirect_uri=https%3A%2F%2Fcongrats-som.glitch.me%2F'"
+            type="button"
+            data-mdb-ripple-unbound="true"
+            data-mdb-ripple="true"
+            data-mdb-ripple-color="red"
+            class="z-10 inline-block px-6 py-2.5 text-white font-medium text-xl leading-tight uppercase rounded-r hover:bg-red-700 focus:bg-red-700 focus:outline-none focus:ring-0 active:bg-red-800 transition duration-150 ease-in-out"
+          >
+            hive signer
+          </button>
+        </div>
+
+        <div class="inline-flex" class="steem" role="group">
+          <button
+            onclick="joins()"
+            type="button"
+            data-mdb-ripple="true"
+            data-mdb-ripple-unbound="true"
+            data-mdb-ripple-color="aqua"
+            class="z-10 inline-block px-6 py-2.5 text-white font-medium text-xl leading-tight uppercase rounded-l hover:bg-teal-500 focus:bg-teal-500 focus:outline-none focus:ring-0 active:bg-teal-700-accent transition duration-150 ease-in-out"
+          >
+            steem keychain
+          </button>
+          <button
+            onclick="window.location = 'https://steemworld.org/'"
+            type="button"
+            data-mdb-ripple="true"
+            data-mdb-ripple-unbound="true"
+            data-mdb-ripple-color="aqua"
+            class="z-10 inline-block px-6 py-2.5 text-white font-medium text-xl leading-tight uppercase rounded-l hover:bg-teal-500 focus:bg-teal-500 focus:outline-none focus:ring-0 active:bg-teal-700-accent transition duration-150 ease-in-out"
+          >
+            steem alternative method
+          </button>
+          <button
+            onclick="window.location = 'https://schoolofminnows.glitch.me'"
+            type="button"
+            data-mdb-ripple="true"
+            data-mdb-ripple-unbound="true"
+            data-mdb-ripple-color="aqua"
+            class="z-10 inline-block px-6 py-2.5 text-white font-medium text-xl leading-tight uppercase rounded-l hover:bg-teal-500 focus:bg-teal-500 focus:outline-none focus:ring-0 active:bg-teal-700-accent transition duration-150 ease-in-out"
+          >
+            steem open source signup
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="text-gray-600 body-font m-10">
+      <div
+        class="container px-5 py-24 mx-auto flex md:items-center lg:items-start md:flex-row md:flex-nowrap flex-wrap flex-col"
+      ></div>
+
+      <div
+        class="container mx-auto py-4 px-5 flex flex-wrap flex-col sm:flex-row"
+      >
+        <p class="text-gray-500 text-md text-center sm:text-left">
+          © 20XX
+          <a
+            href="https://t.me/probablentry"
+            class="text-gray-200 ml-1"
+            target="_blank"
+            >𝙥𝙧𝙤𝙗𝙖𝙗𝙡𝙮 𝙀𝙉𝙏𝙍𝙔𝙋❍𝙄𝙉𝙏 ⁉️</a
+          >
+        </p>
+        <span
+          class="inline-flex sm:ml-auto sm:mt-0 mt-2 justify-center sm:justify-start"
+        >
+          <a href="https://dsc.gg/entrypoint" class="text-gray-500">
+            <i class="fa-brands fa-discord"></i>
+          </a>
+          <a href="https://twitter.com/PointOfEntry" class="ml-3 text-gray-500">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="https://t.me/probablentry" class="ml-3 text-gray-500">
+            <i class="fa-brands fa-telegram"></i>
+          </a>
+        </span>
+      </div>
+    </footer>
   </body>
+
+  <script src="https://cdn.jsdelivr.net/npm/tw-elements/dist/js/index.min.js"></script>
 </html>

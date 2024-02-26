@@ -39,7 +39,7 @@ let post = (module.exports = (title, paragraphs, images, id, msg, vest) => {
     index++;
   }
   if (!taglist.length)
-    taglist = ["minnowswarm", "hive", "blog", "curation"];
+    taglist = ["swarmofminnows", "hive", "blog", "curation"];
   const json_metadata = JSON.stringify({ tags: taglist });
   const permlink = "post" + Math.random().toString(36).substring(2);
 
