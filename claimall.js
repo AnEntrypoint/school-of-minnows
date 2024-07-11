@@ -36,6 +36,7 @@ claim = async (account) => {
     console.log(op)
     try {
         await client.broadcast.sendOperations([op], k);
+        await new Promise(res => setTimeout(res, 1000));
     } catch(e) {
         console.error(e);
     }
@@ -49,7 +50,7 @@ claim = async (account) => {
     var x=0;
     const accounts = fs.readdirSync('data/member-hive')
         for(const name of accounts) {
-            await new Promise(res=>setTimeout(res,5000))
+            //await new Promise(res=>setTimeout(res,5000))
 
             const account = JSON.parse(fs.readFileSync('data/member-hive/'+name))
             if(account.posting.account_auths.length) {
@@ -63,7 +64,6 @@ claim = async (account) => {
                             const accounts = await hivejs.api.getAccountsAsync([account.name]);
                             console.log(accounts)
                             await claim(accounts[0]);
-                            await new Promise(res => setTimeout(res, 1000));
                         }
                         /*let posts = await hivejs.api.getBlogAsync(name, 0, 30);
                         for(let post of posts) {

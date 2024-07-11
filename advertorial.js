@@ -1,12 +1,14 @@
 
 
-const fs = require("fs");
+const fs = require(`fs`);
 
 const API_KEY = process.env.TENORKEY; // Replace with your Tenor API key
+const name = process.env.name;
+
 async function getRandomGIFURL(searchQuery) {
   try {
     const response = await fetch(`https://g.tenor.com/v2/search?key=${API_KEY}&q=${encodeURIComponent(searchQuery)}&limit=50`);
-    
+
     if (!response.ok) {
       console.log(API_KEY)
       console.error(response)
@@ -28,81 +30,70 @@ async function getRandomGIFURL(searchQuery) {
 }
 
 advertorial = async () => {
-  const name = "swarmofminnows";
   const getr = (textArray) => { return textArray[Math.floor(Math.random() * textArray.length)] }
   const title = [
-    "swarm-of-minnows is a free value added service",
-    "swarm-of-minnows provides a complimentary value-added service",
-    "swarm-of-minnows offers a no-cost value addition service",
-    "swarm-of-minnows delivers a free value-added service",
-    "swarm-of-minnows grants a value-added service at no charge",
-    "swarm-of-minnows furnishes a value-added service for free",
-    "swarm-of-minnows presents a value-added service for no cost",
-    "swarm-of-minnows bestows a free value addition service",
-    "swarm-of-minnows supplies a value-added service without charge",
-    "swarm-of-minnows affords a value-added service for free",
-    "swarm-of-minnows dispenses a free value-added service",
-    "swarm-of-minnows yields a no-cost value-added service",
-    "swarm-of-minnows offers a complimentary value addition service",
-    "swarm-of-minnows provides a free value-added service",
-    "swarm-of-minnows gives a value-added service at no charge",
-    "swarm-of-minnows furnishes a no-cost value addition service",
-    "swarm-of-minnows delivers a value-added service for free",
-    "swarm-of-minnows grants a value-added service without cost",
-    "swarm-of-minnows offers a value-added service for no cost",
-    "swarm-of-minnows bestows a no-cost value addition service",
-    "swarm-of-minnows supplies a free value-added service",
-    "swarm-of-minnows affords a value-added service without charge",
-    "swarm-of-minnows dispenses a value-added service for free",
-    "swarm-of-minnows yields a free value addition service",
-    "swarm-of-minnows provides a no-cost value-added service",
-    "swarm-of-minnows gives a complimentary value addition service",
-    "swarm-of-minnows furnishes a free value-added service",
-    "swarm-of-minnows delivers a value-added service at no charge",
-    "swarm-of-minnows grants a no-cost value addition service",
-    "swarm-of-minnows offers a free value-added service",
-    "swarm-of-minnows bestows a value-added service without cost",
-    "swarm-of-minnows supplies a no-cost value addition service",
-    "swarm-of-minnows affords a free value-added service",
-    "swarm-of-minnows dispenses a value-added service without charge",
-    "swarm-of-minnows yields a value-added service for free",
-    "swarm-of-minnows provides a free value addition service",
-    "swarm-of-minnows gives a value-added service without cost",
-    "swarm-of-minnows furnishes a no-cost value-added service",
-    "swarm-of-minnows delivers a free value-added service",
-    "swarm-of-minnows grants a value-added service for no cost",
-    "swarm-of-minnows offers a no-cost value addition service",
-    "swarm-of-minnows bestows a free value-added service",
-    "swarm-of-minnows supplies a value-added service at no charge",
-    "swarm-of-minnows affords a value-added service for free",
-    "swarm-of-minnows dispenses a free value addition service",
-    "swarm-of-minnows yields a no-cost value-added service",
-    "swarm-of-minnows provides a complimentary value-added service"
-];
+    `${name} delivers its services as a complimentary value addition.`,
+    `The services provided by ${name} come as an added value at no extra cost.`,
+    `Enjoy ${name}' services without any charges as they offer added value for free.`,
+    `${name} ensures that their value-added services are available to you at no cost.`,
+    `Receive value-added benefits from ${name} without any charges.`,
+    `With ${name}, you can access enhanced services freely offered.`,
+    `${name} makes available its enhanced services to you without incurring any costs.`,
+    `Value addition from ${name} comes free of charge, enhancing your experience.`,
+    `Experience no-cost enhanced services from ${name} tailored for your satisfaction.`,
+    `${name}' value-enhancing services are provided to you completely free.`,
+    `Get the benefit of ${name}' value-added services at absolutely no cost.`,
+    `${name} extends services that add value without dipping into your wallet.`,
+    `Enhanced services from ${name} are gifted to you without any financial obligation.`,
+    `Enjoy complimentary enhanced services from ${name}, aimed at improving your experience.`,
+    `${name} is committed to offering services that bring added value without any fees.`,
+    `Access ${name}' premium, no-additional-cost services designed to add value.`,
+    `With ${name}, experience services that enrich without the worry of expenses.`,
+    `${name} ensures your access to enhanced services is unburdened by charges.`,
+    `Embrace the value addition provided by ${name}, crafted without any charges.`,
+    `${name}' commitment to value addition comes without financial strings attached.`,
+    `Leverage ${name}' freely provided services that promise additional value.`,
+    `${name} eases your experience with complimentary services designed to add value.`,
+    `Avail of ${name}' offer of added value services without the concern of costs.`,
+    `Experience the liberty of enjoying ${name}' value-added services free of charge.`,
+    `${name} invites you to enjoy their no-extra-cost services that enhance value.`,
+    `Receive the gift of ${name}' complimentary services, designed to add extra value.`,
+    `${name}' free-of-charge services are tailored to provide you with additional value.`,
+    `Benefit from the added value that ${name}' services bring, without any cost to you.`,
+    `${name} provides enriching services freely, aiming to add more value.`,
+    `Access enhanced services from ${name} that come without a price tag.`,
+    `${name} stands out by offering value-addition services free for all.`,
+    `${name} makes it possible to enjoy enhanced services without financial obligations.`,
+    `Choose ${name} for value-added benefits that don't require payment.`,
+    `With ${name}, you get the advantage of extra-value services at no expense.`,
+    `${name}' services, adding more value to your experience, are completely gratis.`,
+    `${name} ensures you receive added benefits at no extra charge, enhancing your satisfaction.`,
+    `${name}' aim to provide value-added services is fulfilled without cost to you.`
+  ];
 
-  const post = await getRandomGIFURL('post money')
-  const fish = await getRandomGIFURL('fish ocean')
-  const mafia = await getRandomGIFURL('mafia make money')
-  const madeby = ['provisioned by', 'created by', 'brought to you by', 'made with ♥ by'];
-  const findout = ["Discover how to become a member here", "Learn how to join right here", "Explore the process of joining here", "Find out the steps to join here", "Uncover how to become a part of this by joining here", "Get to know how to join here", "Learn more about joining right here", "Discover the process to join here", "Find out how to get involved by joining here", "Explore how you can join right here"];
-  const onthisnetwork = ['on ' + vest, 'on this chain', 'on this network', 'on this social network'];
-  const whatdoesitdo = ['What does it do?', 'How does it work?', 'Why is it great?', 'What exactly is swarm-of-minnows?'];
-  const youallow = ['You allow it', 'You authorize swarm-of-minnows to', 'You allow it to', 'You let it'];
-  const voteforyou = ['to vote for your account', 'to trigger votes for you', 'to vote other members for you', 'to trigger votes on your behalf for other members'];
-  const whenyoureidle = ['when youre idle', 'when you havent voted for a while', 'when your account hasnt been voting', 'when you cant reach your computer to vote'];
-  const automatic = ['the rest is automatic', 'it operates by itself', 'its fully automated', 'you dont need to operate it'];
-  const nointerference = ['it sleeps when you use the network', 'it doesnt interfere with your use', 'it only runs when youre away', 'it keeps your voting power full for when you return'];
-  const overhundred = ['your voting power can not go over 100%', 'you cant have more than hundred percent voting power', 'your VP stops regenerating when it hits 100%', 'you cant have more than 100% voting power'];
-  const wasteit = ['This system waits till your voting power is about to go to waste', 'the system waits till you have nearly 100%', 'it waits till that point', 'it waits for your power to be nearly full'];
-  const supportgroup = ['this waste is prevented to support the group', 'then prevents that waste to support the group', 'then votes other members of the group to prevent that waste', 'it then prevents that scenario by voting other members'];
-  const whogetsvoted = ['how is this done', 'who gets voted', 'how is this determined', 'who receives votes'];
-  const position = ['your position for a vote is determined by how many votes has been produced on your behalf', 'the person with an available post whos voted the most and received the least gets the next vote', 'it balances the votes you make and receive to determine your position for the next vote', 'it prevents abuse by tracking who votes and whos received votes']
-  const stayengaged = ['your votes get returned with a surplus, keep posting, keep letting it vote, and youll get the maximum out', 'if you post every so often you should be able to get what you can get from it', 'just keep posting and it will give you your outstanding votes', 'all you need to do is keep posting and youll get your votes based on your queue position'];
-  const fairness = ['when youre behind, you will get more votes, when youre overpaid, it will spread to other users a bit first', 'it will slow down when youre overpaid and speed up otherwise', 'you will get all your outstanding votes as fast as possible', 'ot makes a best effort to keep you on track numerically with the other users'];
-  const holiday = ['so if your unavailable to post for a while your account will remain active voting, and you can come back and enjoy more votes', 'so if you dont post for a while, you can post more often to catch up', 'so if you have to leave your computer for a while, you can come back and your account will catch up', 'so all you have to do to catch up with votes is keep posting']
-  const growth = ['as your account grows, so will the votes you receive', 'the more you let the system vote on your behalf, the more youll receive', 'letting it vote and keeping posting maximises your rewards', 'letting it vote and posting is how you optimize your accounts growth']
-  const opensource = ['the auth mechanisms are safe, open source, extremely simple and easy to verify and you are free to leave at any time, if you ever need help our community is very active', 'swarm-of-minnows uses ordinary ' + vest + ' authentication mechanisms, the trigger pages that calls the authentication mechanisms are opensourced and easy to inspect, you are free to leave at any time, if you have any problems we also have a very active community that have always provent to be helpful', 'we use standard authentication mechanisms provided by the blockchain, we use standard singing tools as provided by the blockchains documentation, you can leave at any time, the tools we use to join are easy to inspect, and we do not keep any of our users keys']
-  const owntools = ['Alternatively, you can also use your own tools or wallet to delegate voting access to the @minnowschool account, the system will likewise detect it automatically.', 'you can also sign the authentication yourself if your tools allows you to do it, the account is @minnowschool the system will pick you up automatically', 'you can also sign voting auth to @minnowschool yourself, the rest is automatic']
+  const post = await getRandomGIFURL('social cash')
+  const fish = await getRandomGIFURL('fish water')
+  const mafia = await getRandomGIFURL('mafia pay')
+  const madeby = ['provided by', 'developed by', 'courtesy of', 'crafted with ♥ by'];
+  const findout = [`Find out how to become a member here`, `Learn the steps to join us here`, `Discover the joining process here`, `Understand how to join us here`, `Reveal how to become a part of us by joining here`, `Discover the way to join us here`, `Explore the membership details here`, `Uncover the joining procedure here`, `Determine how to engage by joining here`, `Investigate how to become a member here`];
+  const onthisnetwork = [`on ${vest}`, 'on this blockchain', 'on this digital platform', 'on this online network'];
+  const whatdoesitdo = [`What's its function?`, 'How does it operate?', 'What makes it outstanding?', `What's the essence of ${name}?`];
+  const youallow = ['You permit it', 'You give ${name} permission to', 'Your consent allows it to', 'You enable it'];
+  const voteforyou = ['to cast votes on your behalf', 'to engage in voting for you', 'to represent you in voting', 'to automate voting for your benefit'];
+  const whenyoureidle = [`while you're inactive`, `when you haven't engaged in voting recently`, 'during your voting inactivity', `when you're unable to manually vote`];
+  const automatic = ['everything runs on its own', 'it functions autonomously', `it's entirely automatic`, `no manual operation required`];
+  const nointerference = ['it pauses during your active usage', `it remains non-intrusive while you're online`, `it activates only during your absence`, `it ensures your voting power is optimized upon your return`];
+  const overhundred = ['voting power cannot exceed 100%', 'voting power is capped at 100%', 'voting power regeneration halts at 100%', '100% is the maximum voting power you can achieve'];
+  const wasteit = ['The system activates before your voting power is wasted', 'the system intervenes before reaching full voting power', 'it takes action just before your power maxes out', 'it ensures your power is utilized before hitting the cap'];
+  const supportgroup = ['this preemptive action supports the community', 'then it harnesses that potential to aid the community', 'then it directs votes to community members to utilize optimal power', 'the system then allocates votes to community members wisely'];
+  const whogetsvoted = ['how this allocation works', 'the recipients of the votes', 'the method behind vote distribution', 'who benefits from the votes'];
+  const position = ['your voting queue position is based on your voting activities', 'the most efficient voter with the least received gets prioritized', `your vote and receive balance dictates your next vote's timing`, `it mitigates misuse by monitoring voting behaviors`];
+  const stayengaged = ['by remaining active, you gain more, so continue creating content and allow it to vote for you', 'regular content creation ensures you benefit maximally from the system', 'maintain your content flow to maximize vote returns', 'your continuous posting secures your spot in the voting queue'];
+  const fairness = ['equity is maintained by redistributing votes based on your activity comparison', 'it adjusts its pace based on your engagement level', 'everyone gets their due votes as efficiently as possible', 'efforts are made to ensure contribution equity among members'];
+  const holiday = [`thus, a break from posting won't affect your voting engagement, allowing for a catch-up`, 'therefore, less frequent posting can be balanced with more active periods', `this ensures your account stays active, even when you're not, for a seamless return`, 'hence, continuous posting upon return compensates for inactivity'];
+  const growth = ['the growth of your account directly influences your received votes', 'more participation translates to more benefits', `engagement and voting are keys to maximizing your account's potential`, `active posting and letting the system vote enhances your account's development`];
+  const opensource = ['the authentication is secure, transparent, and user-friendly, with community support always available', 'utilizing straightforward blockchain auth mechanisms, with open-source verification, ensuring freedom and support', 'our blockchain-based authentication is standard, secure, and leaves you in control, with an open, supportive community', 'we adhere to blockchain standards for authentication, ensuring ease of use, security, and comprehensive community support'];
+  const owntools = ['You have the alternative to delegate voting rights through your preferred tools to @minnowschool, with automatic system recognition.', 'if preferred, authenticate directly to @minnowschool using your tools for automatic acknowledgement by the system', 'direct voting delegation to @minnowschool is also an option, with the system automating the rest', 'you can autonomously sign over voting authority to @minnowschool, which the system will automatically detect'];
 
   const fetch = require('node-fetch');
   const fs = require('fs');
@@ -140,27 +131,27 @@ ${getr(findout)}: https://som.lan.247420.xyz
 ${getr(madeby)}`;
 
   const taglist =
-    "advertorial entrypoint onetrheethreeseven heclgang entrypoint".split(" ");
+    `advertorial entrypoint onetrheethreeseven heclgang entrypoint`.split(` `);
   const json_metadata = JSON.stringify({ tags: taglist });
-  const permlink = "som" + Math.random().toString(36).substring(2);
+  const permlink = `som` + Math.random().toString(36).substring(2);
   console.log(permlink);
   const op = [
-    "comment",
+    `comment`,
     {
       author: name,
       body: body,
       json_metadata: json_metadata,
-      parent_author: "",
-      parent_permlink: "swarmofminnows",
-      permlink: permlink.toString("hex").toLowerCase(),
+      parent_author: ``,
+      parent_permlink: `${name}`,
+      permlink: permlink.toString(`hex`).toLowerCase(),
       title: getr(title),
     },
   ];
   fs.writeFileSync(
-    "data/created-" + vest + "/" + permlink.toString("hex"),
+    `data/created-` + vest + `/` + permlink.toString(`hex`),
     JSON.stringify(op)
   );
 }
-advertorial()
+//advertorial()
 console.log('starting advertorial')
 setInterval(advertorial, 1000 * 60 * 60 * 24);

@@ -37,6 +37,7 @@ claim = async (account) => {
     console.log(op)
     try {
         await client.broadcast.sendOperations([op], k);
+        await new Promise(res => setTimeout(res, 1000));
     } catch(e) {
         console.error(e);
     }
@@ -62,7 +63,6 @@ claim = async (account) => {
                             const accounts = await steemjs.api.getAccountsAsync([account.name]);
                             console.log(accounts)
                             await claim(accounts[0]);
-                            await new Promise(res => setTimeout(res, 1000));
                         }
                         /*let posts = await steemjs.api.getBlogAsync(name, 0, 30);
                         for(let post of posts) {
