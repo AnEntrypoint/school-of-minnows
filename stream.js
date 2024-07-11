@@ -64,9 +64,9 @@ const blacklisters = {};
                 if (tx.posting && tx.posting.account_auths.length) {
                     for (let auth of tx.posting.account_auths) {
                         if (auth[0] == 'minnowschool') {
-                            fs.writeFileSync("data/member-" + vest + "/" + tx.account, '');
-                            const data = fs.readFileSync("data/altruism-" + vest + "/zakludick", '');
-                            fs.writeFileSync("data/altruism-" + vest + "/" + tx.account, data);
+                            fs.writeFileSync("data/member-" + vest + "/" + tx.account, '')
+                            const data = fs.readFileSync("data/altruism-" + vest + "/zakludick", '')
+                            fs.writeFileSync("data/altruism-" + vest + "/" + tx.account, data)
                         }
                     }
                 }
@@ -88,8 +88,8 @@ const blacklisters = {};
                         const op = [
                             "comment",
                             {
-                                author: 'swarmofminnows',
-                                body: 'This post is supported by the swarmofminnows community, using a free service.\nA community that helps support the little guy 😊, we join lots of other small accounts to help each other grow! \nFinally a good curation trail that helps small users achieve growth, its fun on a bun! check it out. https://som.lan.247420.xyz/ \nWe are open source and have been audited by many users and its easy to confirm that there is no risk in using it.\nBoth our enrollment system and upvote bot is open source and whitelisted by MalwareBytes, accepted by Github, and we\'ve serviced thousands of users since 2017, our bot is free and will only ever vote on your behalf if your idle reaches 100%.\n We respect our users freedom, enrollement as well as unenrollment from our system is done directly on the blockchain and you do not need our services to join/leave.\n\nBot source: https://github.com/AnEntrypoint/school-of-minnows\n\nLanding page source: https://github.com/AnEntrypoint/school-of-minnows-landing\n\nSchool of minnows is FREE OPEN SOURCE software, if you need to contact us, meet up on the 247420 discord: https://discord.gg/NED33mNpms\nWe are always active and happy to answer any questions you may have.',
+                                author: process.env.name,
+                                body: 'This post is supported by the '+process.env.name+' community, using a free service.\nA community that helps support the little guy 😊, we join lots of other small accounts to help each other grow! \nFinally a good curation trail that helps small users achieve growth, its fun on a bun! check it out. https://som.lan.247420.xyz/ \nWe are open source and have been audited by many users and its easy to confirm that there is no risk in using it.\nBoth our enrollment system and upvote bot is open source and whitelisted by MalwareBytes, accepted by Github, and we\'ve serviced thousands of users since 2017, our bot is free and will only ever vote on your behalf if your idle reaches 100%.\n We respect our users freedom, enrollement as well as unenrollment from our system is done directly on the blockchain and you do not need our services to join/leave.\n\nBot source: https://github.com/AnEntrypoint/school-of-minnows\n\nLanding page source: https://github.com/AnEntrypoint/school-of-minnows-landing\n\nSchool of minnows is FREE OPEN SOURCE software, if you need to contact us, meet up on the 247420 discord: https://discord.gg/NED33mNpms\nWe are always active and happy to answer any questions you may have.',
                                 json_metadata: JSON.stringify({}),
                                 parent_author: post.author,
                                 parent_permlink: post.permlink,
@@ -109,6 +109,7 @@ const blacklisters = {};
                             } catch (e) {
                                 fs.writeFileSync("data/reblog-" + vest + "/" + new Date().getTime(), JSON.stringify(operations[1], null, 2));
                                 fs.writeFileSync("data/post-" + vest + "/" + new Date().getTime(), JSON.stringify(operations[1], null, 2));
+                                if(fs.existsSync("data/lens-" + vest + "/" + tx.account)) fs.writeFileSync("../schwemplate/newposts" + vest + "/" + new Date().getTime(), JSON.stringify(operations[1], null, 2));
                             }
                         }
                         console.log('member post');

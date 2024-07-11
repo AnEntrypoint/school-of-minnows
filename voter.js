@@ -40,7 +40,7 @@ setInterval(sync, 1000 * 60 * 60);
 
 setTimeout(() => {
     process.exit();
-}, 3600000)
+}, 1000*60*10)
 const run = async () => {
     if (!props) await sync();
     const members = fs.readdirSync('data/member-' + vest);
@@ -84,10 +84,6 @@ const run = async () => {
             posteraltruism = fs.existsSync('data/altruism-' + vest + '/' + post.author) ? JSON.parse(fs.readFileSync('data/altruism-' + vest + '/' + post.author)) : { up: 0, down: 25, last: new Date().getTime() }
         } catch {
             posteraltruism = { up: 0, down: 25, last: new Date().getTime() };
-        }
-        if (posteraltruism.down == 24.36287603576817) {
-            posteraltruism.down = posteraltruism.down = 0;
-            fs.writeFileSync('data/altruism-' + vest + '/' + post.author, JSON.stringify(posteraltruism));
         }
         if (!posteraltruism.last || new Date().getTime() - posteraltruism.last > 86400000) {
             posteraltruism.down = posteraltruism.down * 0.97;
@@ -151,7 +147,7 @@ const run = async () => {
                 if (post.author == name) {
                     add = false;
                 }
-                if (getRc(account, props) < 98) {
+                if (global.vest == 'hive' && getRc(account, props) < 98) {
                     add = false
                 }
 
@@ -167,13 +163,13 @@ const run = async () => {
             }
         }
         for (let memberData of smembers.reverse().sort((a, b) => { return getRc(b, props) - getRc(a, props) })) {
-            if (memberData.skip) {
+            /*if (memberData.skip) {
                 console.log(memberData.name, 'skipping');
                 continue;
-            }
+            }*/
             const name = memberData.name;
             if (getRc(memberData, props) < 98) {
-                memberData.skip = true;
+                //memberData.skip = true;
                 continue;
             }
             if (new Date().getTime() - new Date(memberData.last_vote_time).getTime() < 6000) {
@@ -185,7 +181,7 @@ const run = async () => {
             //    console.log(name, 'too low vp mana on file', name, v.current_mana)
             //    continue;
             //}
-            if (r.current_mana < 300144850) {
+            if (global.vest == 'hive' && r.current_mana < 300144850 ) {
                 console.log(name, 'too low rc mana on file', name, r.current_mana)
                 memberData.last_round = new Date().getTime() + 3600000;
                 fs.writeFileSync('data/member-' + vest + '/' + name, JSON.stringify(memberData));
@@ -214,20 +210,20 @@ const run = async () => {
                 memberData.skip = true;
                 continue;
             }
-            if (getRc(account, props) < 96) {
+            if (global.vest == 'hive' && getRc(account, props) < 96) {
                 console.log(name, 'too low rc on chain', getRc(account, props), getRc(memberData, props), post.permlink)
                 memberData.skip = true;
                 continue;
             }
             if ((post.active_votes).filter(a => { return a.voter == account.name }).length) {
-                console.log(name, 'already voted voted on ', post.permlink)
+                console.log(name, 'already voted on ', post.permlink)
                 continue;
             }
             const value = await getValue(account, fund, price);
 
             let weight = 10000;
-            if (value > 0.10) {
-                weight = (1 / (value / 0.10)) * 10000;
+            if (value > 0.20) {
+                weight = (1 / (value / 0.20)) * 10000;
                 if (weight < 500) weight = 500;
             }
 
@@ -271,7 +267,6 @@ const run = async () => {
             } catch (e) {
                 console.error(e.message);
                 console.trace(e);
-                return;
             }
             if (votes > 10) return true;
         }

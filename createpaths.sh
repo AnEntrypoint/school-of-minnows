@@ -19,3 +19,4 @@ mkdir data/cancelled-steem
 mkdir data/cancelled-hive
 mkdir data/advertorial-steem
 mkdir data/advertorial-hive
+mkdir data/hive-lens

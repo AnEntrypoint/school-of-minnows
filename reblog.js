@@ -1,5 +1,5 @@
 const fs = require("fs");
-const accountname = 'swarmofminnows';
+const accountname = process.env.name;
 const reblog = async () => {
   count = 0;
   let posts = fs.readdirSync("data/reblog-" + vest);
